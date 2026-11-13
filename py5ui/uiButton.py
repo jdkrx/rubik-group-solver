@@ -47,3 +47,8 @@ class UIButton(UIElement):
     def onReleased(self):
         self.active = False
         pass
+    #
+    def setclick(self, click):
+        self.clickEvent = click
+    def setpress(self, press):
+        self.pressEvent = press

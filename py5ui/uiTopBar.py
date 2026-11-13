@@ -32,6 +32,7 @@ class UITopBar(UIElement):
         for x in self.barElements:
             x.x = xcounter
             xcounter += x.width
+        return len(self.barElements) - 1
     def onClick(self):
         for x in self.barElements:
             x.onClick()

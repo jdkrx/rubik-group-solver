@@ -18,6 +18,7 @@ class UIManager:
 
     def addElement(self, newelement):
         self.elements.append(newelement)
+        return len(self.elements) - 1
     def checkClicked(self):
         for x in self.elements:
             if(x.clickable):
