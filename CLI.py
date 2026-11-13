@@ -278,6 +278,8 @@ finalconfig = time.perf_counter()
 if debug: print(f"Tiempo configurando los representantes: {finalconfig - inicioconfig} segundos")
 
 def buscarsolvetw(scramble):
+    print()
+    print("Solución: ")
     if (scramble == ID_CUBO): 
         print("Cubo ya resuelto")
         return
