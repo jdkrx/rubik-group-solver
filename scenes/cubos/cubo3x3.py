@@ -4,30 +4,30 @@ from math import pi as PI
 setcoordedges = [
     # un array con las instrucciones para llegar a cada arista del cubo
     # [ (rotacionx, rotaciony), translate(x, y, z) ] -> id de pieza en el espacio de aristas
-    [(0, PI), (0, -80, -80)],       # UB
-    [(0, PI/2), (80, -80, 0)],      # UR
-    [(0, 0), (0, -80, 80)],         # UF
-    [(0, -PI/2), (-80, -80, 0)],    # UL
-    [(PI/2, -PI/2), (-80, 0, -80)], # BL 
-    [(-PI/2, -PI/2), (-80, 0, 80)], # FL
-    [(-PI/2, PI/2), (80, 0, 80)],   # FR
-    [(PI/2, PI/2), (80, 0, -80)],   # BR
-    [(PI, PI), (0, 80, 80)],        # DF
-    [(PI, PI/2), (80, 80, 0)],      # DR
-    [(PI, 0), (0, 80, -80)],        # DB
-    [(PI, -PI/2), (-80, 80, 0)]     # DL
+    [(0, PI), [0, -80, -80]],       # UB
+    [(0, PI/2), [80, -80, 0]],      # UR
+    [(0, 0), [0, -80, 80]],         # UF
+    [(0, -PI/2), [-80, -80, 0]],    # UL
+    [(PI/2, -PI/2), [-80, 0, -80]], # BL 
+    [(-PI/2, -PI/2), [-80, 0, 80]], # FL
+    [(-PI/2, PI/2), [80, 0, 80]],   # FR
+    [(PI/2, PI/2), [80, 0, -80]],   # BR
+    [(PI, PI), [0, 80, 80]],        # DF
+    [(PI, PI/2), [80, 80, 0]],      # DR
+    [(PI, 0), [0, 80, -80]],        # DB
+    [(PI, -PI/2), [-80, 80, 0]]     # DL
 ]
 setcoordcorners = [
     # un array con las instrucciones para llegar a cada arista del cubo
     # [ (rotacionx, rotaciony), translate(x, y, z) ] -> id de pieza en el espacio de aristas
-    [(0, PI), (-80, -80, -80)],   # UBL
-    [(0, PI/2), (80, -80, -80)],  # UBR
-    [(0, 0), (80, -80, 80)],      # UFR
-    [(0, -PI/2), (-80, -80, 80)], # UFL
-    [(PI, PI), (-80, 80, 80)],    # DFL
-    [(PI, PI/2), (80, 80, 80)],   # DFR
-    [(PI, 0), (80, 80, -80)],     # DBR
-    [(PI, -PI/2), (-80, 80, -80)] # DBL
+    [(0, PI), [-80, -80, -80]],   # UBL
+    [(0, PI/2), [80, -80, -80]],  # UBR
+    [(0, 0), [80, -80, 80]],      # UFR
+    [(0, -PI/2), [-80, -80, 80]], # UFL
+    [(PI, PI), [-80, 80, 80]],    # DFL
+    [(PI, PI/2), [80, 80, 80]],   # DFR
+    [(PI, 0), [80, 80, -80]],     # DBR
+    [(PI, -PI/2), [-80, 80, -80]] # DBL
 ]
 setcoordcenters = [
     [(-PI/2, 0), (0, -120, 0)],
@@ -101,7 +101,7 @@ D_LAYER = {
 }
 
 # una pieza debe ser 80x80x80
-def drawEdge(edge, orientation):
+def drawEdge(edge, orientation, t):
     if orientation == 1: edge = (edge[1], edge[0])
     # py5.stroke(255, 0, 0)
     # py5.line(0, 0, 0, 100, 0, 0) # x rojo
@@ -114,20 +114,20 @@ def drawEdge(edge, orientation):
     py5.rect_mode(py5.CENTER)
 
     
-    py5.translate(0, 0, 40)
+    py5.translate(0, 0, 40*t)
     py5.fill(palette[edge[1]])
     py5.rect(0, 0, 80, 80)
-    py5.translate(0, 0, -40)
-    py5.translate(0, -40, 0)
+    py5.translate(0, 0, -40*t)
+    py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
 
     py5.fill(palette[edge[0]])
     py5.rect(0, 0, 80, 80)
 
     py5.rotate_x(-PI/2)
-    py5.translate(0, 40, 0)
+    py5.translate(0, 40*t, 0)
     py5.rect_mode(py5.CORNER)
-def drawCorner(corner, orientation):
+def drawCorner(corner, orientation, t):
     if orientation == 1:  corner = (corner[1], corner[2], corner[0])
     if orientation == 2:  corner = (corner[2], corner[0], corner[1])
     # py5.stroke(255, 0, 0)
@@ -141,24 +141,24 @@ def drawCorner(corner, orientation):
     py5.rect_mode(py5.CENTER)
 
     
-    py5.translate(0, 0, 40)
+    py5.translate(0, 0, 40*t)
     py5.fill(palette[corner[1]])
     py5.rect(0, 0, 80, 80)
-    py5.translate(0, 0, -40)
+    py5.translate(0, 0, -40*t)
 
-    py5.translate(0, -40, 0)
+    py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
     py5.fill(palette[corner[0]])
     py5.rect(0, 0, 80, 80)
     py5.rotate_x(-PI/2)
-    py5.translate(0, 40, 0)
+    py5.translate(0, 40*t, 0)
 
-    py5.translate(40, 0, 0)
+    py5.translate(40*t, 0, 0)
     py5.rotate_y(PI/2)
     py5.fill(palette[corner[2]])
     py5.rect(0, 0, 80, 80)
     py5.rotate_y(-PI/2)
-    py5.translate(-40, 0, 0)
+    py5.translate(-40*t, 0, 0)
 
     py5.rect_mode(py5.CORNER)
 
@@ -195,7 +195,7 @@ class Rubik333:
         if not isinstance(otro, Rubik333):
             return False
         return self.v == otro.v and self.w == otro.w and self.rho == otro.rho and self.sigma == otro.sigma
-    def display(self):
+    def display(self, t):
         for z in range(12):
             x = self.sigma[z]
             sigmainversa = [0]*12
@@ -206,13 +206,13 @@ class Rubik333:
             a = setcoordedges[z][1][0]
             b = setcoordedges[z][1][1]
             c = setcoordedges[z][1][2]
-            py5.translate(a, b, c)
+            py5.translate(a*t, b*t, c*t)
             py5.rotate_x(setcoordedges[z][0][0])
             py5.rotate_y(setcoordedges[z][0][1])
-            drawEdge(edges[x], y)
+            drawEdge(edges[x], y, t)
             py5.rotate_y(-setcoordedges[z][0][1])
             py5.rotate_x(-setcoordedges[z][0][0])
-            py5.translate(-a, -b, -c)
+            py5.translate(-a*t, -b*t, -c*t)
         for z in range(8):
             x = self.rho[z]
             rhoinversa = [0]*8
@@ -222,18 +222,18 @@ class Rubik333:
             a = setcoordcorners[z][1][0]
             b = setcoordcorners[z][1][1]
             c = setcoordcorners[z][1][2]
-            py5.translate(a, b, c)
+            py5.translate(a*t, b*t, c*t)
             py5.rotate_x(setcoordcorners[z][0][0])
             py5.rotate_y(setcoordcorners[z][0][1])
-            drawCorner(corners[x], y)
+            drawCorner(corners[x], y, t)
             py5.rotate_y(-setcoordcorners[z][0][1])
             py5.rotate_x(-setcoordcorners[z][0][0])
-            py5.translate(-a, -b, -c)
+            py5.translate(-a*t, -b*t, -c*t)
         for z in range(6):
             a = setcoordcenters[z][1][0]
             b = setcoordcenters[z][1][1]
             c = setcoordcenters[z][1][2]
-            py5.translate(a, b, c)
+            py5.translate(a*t, b*t, c*t)
             py5.rotate_x(setcoordcenters[z][0][0])
             py5.rotate_y(setcoordcenters[z][0][1])
             py5.fill(palette[faces[z]])
@@ -242,7 +242,7 @@ class Rubik333:
             py5.rect_mode(py5.CORNER)
             py5.rotate_y(-setcoordcenters[z][0][1])
             py5.rotate_x(-setcoordcenters[z][0][0])
-            py5.translate(-a, -b, -c)
+            py5.translate(-a*t, -b*t, -c*t)
     def copy(self):
         return Rubik333(self.v, self.w, self.rho, self.sigma)
 

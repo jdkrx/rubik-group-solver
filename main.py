@@ -2,9 +2,9 @@ import py5  # Esta libreria la puse para que nos haga de render
 from math import pi as PI # hola necesito a pi
 from py5ui import *
 from scenes.inicio import ui2
-from scenes.principal import ui
-from scenes._scenes_main import sceenemanager
-
+from scenes.principal import ui, keyeventpress, keyeventrelease
+from scenes._scenes_main import *
+UIs = [ui2, ui]
 fontsize = 20
 
 def setup():
@@ -14,13 +14,20 @@ def setup():
 def draw():
     sceenemanager.display()
 def mouse_pressed():
-    if sceenemanager.getScene() == 1: ui.checkClicked() # evaluar clicks de la ui
-    elif sceenemanager.getScene() == 0: ui2.checkClicked()
+    for x in range(len(sceenemanager.scenes)):
+        if sceenemanager.getScene() == x: UIs[x].checkClicked() # evaluar clicks de la ui
 def mouse_released():
-    if sceenemanager.getScene() == 1: ui.checkReleased() # evaluar clicks de la ui
-    elif sceenemanager.getScene() == 0: ui2.checkReleased()
-
-
+    for x in range(len(sceenemanager.scenes)):
+        if sceenemanager.getScene() == x: UIs[x].checkReleased() # evaluar clicks de la ui
+def key_pressed():
+    pressed_key = py5.key
+    if sceenemanager.getScene() == PRINCIPAL:
+        keyeventpress(pressed_key)
+def key_released():
+    released_key = py5.key
+    if sceenemanager.getScene() == PRINCIPAL:
+        keyeventrelease(released_key)
+    
 py5.run_sketch()
 
 
