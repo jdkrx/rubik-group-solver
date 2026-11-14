@@ -243,7 +243,8 @@ class Rubik333:
             py5.rotate_y(-setcoordcenters[z][0][1])
             py5.rotate_x(-setcoordcenters[z][0][0])
             py5.translate(-a, -b, -c)
-
+    def copy(self):
+        return Rubik333(self.v, self.w, self.rho, self.sigma)
 
 ID_CUBO = Rubik333(
     [0]*8, [0]*12, 
