@@ -6,5 +6,6 @@ from .uiBarButton import UIBarButton
 from .uiBarMenu import UIBarMenu
 from .uiText import UIText
 from .sceneManager import SceneManager
+from .uiTextBox import UITextBox
 
-__all__ = ["UIButton", "UIManager", "UIElement", "UITopBar", "UIBarButton", "UIBarMenu", "UIText", "SceneManager"]
+__all__ = ["UIButton", "UIManager", "UIElement", "UITopBar", "UIBarButton", "UIBarMenu", "UIText", "SceneManager", "UITextBox"]

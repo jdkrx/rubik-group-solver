@@ -36,6 +36,15 @@ config_boton_inicio = ( # Boton del inicio
     1, # Grosor trazo (px)
     12  # Radio borde (px)
 )
+config_botones_principal = ( # Botones en la escena principal
+    py5.color(255, 118, 162), # Color relleno sin clickear
+    py5.color(255, 118, 162), # Color relleno durante click
+    py5.color(255, 118, 162), # Color relleno mouse encima
+    py5.color(0), # Color texto
+    py5.color(0),   # Color trazo
+    1, # Grosor trazo (px)
+    12  # Radio borde (px)
+)
 
 config_barra = (
     py5.color(40, 40, 55), # Color relleno 

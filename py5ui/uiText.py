@@ -14,6 +14,7 @@ class UIText(UIElement):
         py5.text_size(self.textsize)
         if (self.mode == "CENTER"):
             py5.text_align(py5.CENTER, py5.CENTER)
-        else: py5.text_align(py5.LEFT, py5.BASELINE)
-
-        py5.text(self.text, self.x, self.y)
+            py5.text(self.text, self.x, self.y)
+        else: 
+            py5.text_align(py5.LEFT, py5.BASELINE)
+            py5.text(self.text, self.x, self.y, py5.width -self.x, py5.height-self.y)

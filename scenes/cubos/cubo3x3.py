@@ -1,4 +1,4 @@
-import py5
+import py5 #3d
 import json
 import queue
 from math import pi as PI
@@ -28,11 +28,12 @@ def obtener_firma_G3_G4(g):
     sigma = tuple(g.sigma)
     return (v_tupla, w_tupla, rho, sigma)
 
-# archivoreps1 = False
-# archivoreps2 = False
-# archivoreps3 = False
-# archivoreps4 = False
+archivoreps1 = False
+archivoreps2 = False
+archivoreps3 = False
+archivoreps4 = False
 def configurararchivos(cola):
+    global archivoreps1, archivoreps2, archivoreps3, archivoreps4
     print("Haciendo cosas")
     try:
         with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
@@ -100,7 +101,7 @@ def configurararchivos(cola):
     if True: print(f"Tiempo configurando los representantes: {finalconfig - inicioconfig} segundos")
     cola.put((dict_reps1, dict_reps2, dict_reps3, dict_reps4))
 
-def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
+def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4, spacing):
     
     alg1 = dict_reps1[obtener_firma_G0_G1(scramble)]
     str = ""
@@ -115,6 +116,8 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
     if (scramble*g1.inverso() == ID_CUBO):
         algfinal = algo1
         return (algfinal)
+
+    if spacing: algo1 += [" (EO)\n"]
     alg2 = dict_reps2[obtener_firma_G1_G2(scramble*g1.inverso())]
     algo2 = []
     str = ""
@@ -129,6 +132,7 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
     if (scramble*g1.inverso()*g2.inverso() == ID_CUBO):
         algfinal = algo1 + algo2
         return (algfinal)
+    if spacing: algo2 += [" (DR)\n"]
     alg3 = dict_reps3[obtener_firma_G2_G3(scramble*g1.inverso()*g2.inverso())]
     str = ""
     algo3 = []
@@ -143,6 +147,7 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
     if (scramble*g1.inverso()*g2.inverso()*g3.inverso() == ID_CUBO):
         algfinal = algo1 + algo2 + algo3
         return (algfinal)
+    if spacing: algo3 += [" (HTR)\n"]
     alg4 = dict_reps4[obtener_firma_G3_G4(scramble*g1.inverso()*g2.inverso()*g3.inverso())]
     str = ""
     algo4 = []
@@ -152,7 +157,7 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
         algo4.append(gen)
     algfinal = algo1 + algo2 + algo3 + algo4
     return (algfinal)
-
+# region
 setcoordedges = [
     # un array con las instrucciones para llegar a cada arista del cubo
     # [ (rotacionx, rotaciony), translate(x, y, z) ] -> id de pieza en el espacio de aristas
@@ -296,68 +301,114 @@ layers = {
     "F": F_LAYER,
     "B": B_LAYER
 }
-
+# endregion
 # una pieza debe ser 80x80x80
 def drawEdge(edge, orientation, t):
+    if t==-1: 
+        t2 = -1
+        t=1
+    else: t2 = 1
     if orientation == 1: edge = (edge[1], edge[0])
-    # py5.stroke(255, 0, 0)
-    # py5.line(0, 0, 0, 100, 0, 0) # x rojo
-    # py5.stroke(0, 255, 0)
-    # py5.line(0, 0, 0, 0, 100, 0) # y verde
-    # py5.stroke(0, 0, 255)
-    # py5.line(0, 0, 0, 0, 0, 100) # z azul
 
     py5.stroke(0)
     py5.rect_mode(py5.CENTER)
 
     
     py5.translate(0, 0, 40*t)
-    py5.fill(palette[edge[1]])
+    if t2 == 1: py5.fill(palette[corner[1]])
+    if t2 ==-1: py5.fill(50, 50, 50)
     py5.rect(0, 0, 80, 80)
     py5.translate(0, 0, -40*t)
     py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
 
-    py5.fill(palette[edge[0]])
+    if t2 == 1: py5.fill(palette[corner[1]])
+    if t2 ==-1: py5.fill(50, 50, 50)
     py5.rect(0, 0, 80, 80)
 
     py5.rotate_x(-PI/2)
     py5.translate(0, 40*t, 0)
     py5.rect_mode(py5.CORNER)
-def drawCorner(corner, orientation, t):
+def drawCorner(corner, orientation, t, config = []): 
+    if t==-1: 
+        t2 = -1
+        t=1
+    else: t2 = 1
     if orientation == 1:  corner = (corner[1], corner[2], corner[0])
     if orientation == 2:  corner = (corner[2], corner[0], corner[1])
-    # py5.stroke(255, 0, 0)
-    # py5.line(0, 0, 0, 100, 0, 0) # x rojo
-    # py5.stroke(0, 255, 0)
-    # py5.line(0, 0, 0, 0, 100, 0) # y verde
-    # py5.stroke(0, 0, 255)
-    # py5.line(0, 0, 0, 0, 0, 100) # z azul
 
     py5.stroke(0)
     py5.rect_mode(py5.CENTER)
 
-    
     py5.translate(0, 0, 40*t)
-    py5.fill(palette[corner[1]])
+    if t2 == 1: py5.fill(palette[corner[1]])
+    if t2 ==-1: 
+        py5.fill(50, 50, 50)
+        if config != []:
+            if config[0][0] == 1:
+                py5.fill(config[0][1])
     py5.rect(0, 0, 80, 80)
     py5.translate(0, 0, -40*t)
 
     py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
-    py5.fill(palette[corner[0]])
+    if t2 == 1: py5.fill(palette[corner[1]])
+    if t2 ==-1: 
+        py5.fill(50, 50, 50)
+        if config != []:
+            if config[1][0] == 1:
+                py5.fill(config[1][1])
     py5.rect(0, 0, 80, 80)
     py5.rotate_x(-PI/2)
     py5.translate(0, 40*t, 0)
 
     py5.translate(40*t, 0, 0)
     py5.rotate_y(PI/2)
-    py5.fill(palette[corner[2]])
+    if t2 == 1: py5.fill(palette[corner[1]])
+    if t2 ==-1: 
+        py5.fill(50, 50, 50)
+        if config != []:
+            if config[2][0] == 1:
+                py5.fill(config[2][1])
     py5.rect(0, 0, 80, 80)
     py5.rotate_y(-PI/2)
     py5.translate(-40*t, 0, 0)
 
     py5.rect_mode(py5.CORNER)
+setcoordstickers = [
+    # un array con las instrucciones para llegar a cada sticker del cubo
+    # [ (rotacionx, rotaciony), translate(x, y, z) ] -> id del sticker en el espacio de pegatinas
+    [(PI/2, 0), [-80, -120, -80]], # UBL
+    [(PI/2, 0), [0, -120, -80]],
+    [(PI/2, 0), [80, -120, -80]],  # UBR
+    [(PI/2, 0), [80, -120, 0]],
+    [(PI/2, 0), [80, -120, 80]],   # UFR
+    [(PI/2, 0), [0, -120, 80]],
+    
+    [(PI/2, -PI/2), [-80, 0, -80]]
+    [(PI/2, 0), [-80, -120, 80]],  # UFL
+    [(PI/2, 0), [-80, -120, 0]],
+    [(PI, PI), [-80, 80, 80]],     # DFL
+    [(PI, PI/2), [80, 80, 80]],    # DFR
+    [(PI, 0), [80, 80, -80]],      # DBR
+    [(PI, -PI/2), [-80, 80, -80]]  # DBL
+]
+
+def drawSticker(index, color):
+    py5.stroke(0)
+    py5.rect_mode(py5.CENTER)
+    a = setcoordstickers[index][1][0]
+    b = setcoordstickers[index][1][1]
+    c = setcoordstickers[index][1][2]
+    py5.translate(a, b, c)
+    py5.fill(palette[color])
+    py5.rotate_x(setcoordstickers[index][0][0])
+    py5.rotate_y(setcoordstickers[index][0][1])
+    py5.rect(0, 0, 80, 80)
+    py5.rotate_y(-setcoordstickers[index][0][1])
+    py5.rotate_x(-setcoordstickers[index][0][0])
+    py5.translate(-a, -b, -c)
+
 # endregion
 class Rubik333:
     def __init__(self, v, w, rho, sigma):
@@ -445,7 +496,7 @@ class Rubik333:
             if(self.toSolve[self.index] == "F'"):
                 self.turnf()
             self.turning = True
-        if (self.index < len(self.toSolve) and (getTime() - self.iniciosolve) > 0.4):
+        if (self.index < len(self.toSolve) and (getTime() - self.iniciosolve) > 0.7):
             self.iniciosolve = getTime()
             self.turning = False
             if not ("2" in self.toSolve[self.index]):
@@ -737,9 +788,11 @@ class Rubik333:
         self.direction = -1
         pass
     def solve(self, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
-        self.toSolve = buscarsolvetw(self.copy(), dict_reps1, dict_reps2, dict_reps3, dict_reps4)
+        self.toSolve = buscarsolvetw(self.copy(), dict_reps1, dict_reps2, dict_reps3, dict_reps4, False)
         self.iniciosolve = getTime()
         self.index = 0
+    def getsolve(self, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
+        return buscarsolvetw(self.copy(), dict_reps1, dict_reps2, dict_reps3, dict_reps4, True)
 ID_CUBO = Rubik333(
     [0]*8, [0]*12, 
     list(range(8)), list(range(12))
@@ -887,3 +940,82 @@ def generar_H():
         frontera = nueva
     return list(H)
 H = generar_H()
+
+class Build333:
+    def __init__(self):
+        d = ID_CUBO.copy()
+        self.v = d.v
+        self.w = d.w
+        self.rho = d.rho
+        self.sigma = d.sigma
+        self.corners = [[]]*8
+        self.edges = [[]]*12
+        self.indexcorners = 0
+        self.indexedges = 0
+        pass
+    def draw_centers(self):
+        for z in range(6): # DRAW CENTERS
+            a = setcoordcenters[z][1][0]
+            b = setcoordcenters[z][1][1]
+            c = setcoordcenters[z][1][2]
+            py5.translate(a, b, c)
+            py5.rotate_x(setcoordcenters[z][0][0])
+            py5.rotate_y(setcoordcenters[z][0][1])
+            py5.fill(palette[faces[z]])
+            py5.rect_mode(py5.CENTER)
+            py5.rect(0, 0, 80, 80)
+            py5.rect_mode(py5.CORNER)
+            py5.rotate_y(-setcoordcenters[z][0][1])
+            py5.rotate_x(-setcoordcenters[z][0][0])
+            py5.translate(-a, -b, -c)
+    def draw_corners(self):
+        for z in range(8): # DRAW CORNERS
+            x = self.rho[z]
+            rhoinversa = [0]*8
+            for i in range(8): rhoinversa[self.rho[i]] = i
+            x = rhoinversa[z]
+            y = self.v[z]
+            a = setcoordcorners[z][1][0]
+            b = setcoordcorners[z][1][1]
+            c = setcoordcorners[z][1][2]
+            py5.translate(a, b, c)
+            py5.rotate_x(setcoordcorners[z][0][0])
+            py5.rotate_y(setcoordcorners[z][0][1])
+            
+            if self.corners[z] != []:
+                config = []
+                for k in range(len(self.corners[z])):
+                    config.append([1, palette[self.corners[z][k]]])
+                if len(config) == 1:
+                    config.append([0])
+                    config.append([0])
+                if len(config) == 2:
+                    config.append([0])
+                drawCorner(corners[x], y, -1, config=config)
+            else: drawCorner(corners[x], y, -1)
+            py5.rotate_y(-setcoordcorners[z][0][1])
+            py5.rotate_x(-setcoordcorners[z][0][0])
+            py5.translate(-a, -b, -c)
+    def draw_edges(self):
+        for z in range(12): # DRAW EDGES
+            x = self.sigma[z]
+            sigmainversa = [0]*12
+            for i in range(12): sigmainversa[self.sigma[i]] = i
+            x = sigmainversa[z]
+            y = self.w[z]
+            a = setcoordedges[z][1][0]
+            b = setcoordedges[z][1][1]
+            c = setcoordedges[z][1][2]
+            py5.translate(a, b, c)
+            py5.rotate_x(setcoordedges[z][0][0])
+            py5.rotate_y(setcoordedges[z][0][1])
+            drawEdge(edges[x], y, -1)
+            py5.rotate_y(-setcoordedges[z][0][1])
+            py5.rotate_x(-setcoordedges[z][0][0])
+            py5.translate(-a, -b, -c) 
+    def set_corner_sticker(self, color):
+        self.corners[self.indexcorners].append(color)
+        self.indexcorners+=1
+    def set_edge_sticker(self, color):
+        self.corners[self.indexcorners].append(color)
+        self.indexcorners+=1
