@@ -1,5 +1,7 @@
 import json
 import time
+import threading
+import queue
 from representantes import get_reps1, get_reps2, get_reps3, get_reps4
 
 debug = True
@@ -208,76 +210,79 @@ archivoreps1 = False
 archivoreps2 = False
 archivoreps3 = False
 archivoreps4 = False
-try:
-    with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
-        repscamino1 = json.load(file)
-    archivoreps1 = True
-except FileNotFoundError:
-    pass
-try:
-    with open('representantes/G1-G2.json', 'r', encoding='utf-8') as file:
-        repscamino2 = json.load(file)
-    archivoreps2 = True
-except FileNotFoundError:
-    pass
-try:
-    with open('representantes/G2-G3.json', 'r', encoding='utf-8') as file:
-        repscamino3 = json.load(file)
-    archivoreps3 = True
-except FileNotFoundError:
-    pass
-try:
-    with open('representantes/G3-G4.json', 'r', encoding='utf-8') as file:
-        repscamino4 = json.load(file)
-    archivoreps4 = True
-except FileNotFoundError:
-    pass
+def otrohilo(cola):
+    print("Haciendo cosas")
+    try:
+        with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
+            repscamino1 = json.load(file)
+        archivoreps1 = True
+    except FileNotFoundError:
+        pass
+    try:
+        with open('representantes/G1-G2.json', 'r', encoding='utf-8') as file:
+            repscamino2 = json.load(file)
+        archivoreps2 = True
+    except FileNotFoundError:
+        pass
+    try:
+        with open('representantes/G2-G3.json', 'r', encoding='utf-8') as file:
+            repscamino3 = json.load(file)
+        archivoreps3 = True
+    except FileNotFoundError:
+        pass
+    try:
+        with open('representantes/G3-G4.json', 'r', encoding='utf-8') as file:
+            repscamino4 = json.load(file)
+        archivoreps4 = True
+    except FileNotFoundError:
+        pass
 
-if not archivoreps1:
-    get_reps1()
-    with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
-        repscamino1 = json.load(file)
-    archivoreps1 = True
-if not archivoreps2:
-    get_reps2()
-    with open('representantes/G1-G2.json', 'r', encoding='utf-8') as file:
-        repscamino2 = json.load(file)
-    archivoreps2 = True
-if not archivoreps3:
-    get_reps3()
-    with open('representantes/G2-G3.json', 'r', encoding='utf-8') as file:
-        repscamino3 = json.load(file)
-    archivoreps3 = True
-if not archivoreps4:
-    get_reps4()
-    with open('representantes/G3-G4.json', 'r', encoding='utf-8') as file:
-        repscamino4 = json.load(file)
-    archivoreps4 = True
+    if not archivoreps1:
+        get_reps1()
+        with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
+            repscamino1 = json.load(file)
+        archivoreps1 = True
+    if not archivoreps2:
+        get_reps2()
+        with open('representantes/G1-G2.json', 'r', encoding='utf-8') as file:
+            repscamino2 = json.load(file)
+        archivoreps2 = True
+    if not archivoreps3:
+        get_reps3()
+        with open('representantes/G2-G3.json', 'r', encoding='utf-8') as file:
+            repscamino3 = json.load(file)
+        archivoreps3 = True
+    if not archivoreps4:
+        get_reps4()
+        with open('representantes/G3-G4.json', 'r', encoding='utf-8') as file:
+            repscamino4 = json.load(file)
+        archivoreps4 = True
+    def construir_dict(caminos, obtener_firma):
+        d = {}
+        for camino in caminos:
+            g = ID_CUBO
+            for mov in camino:
+                g = g * genname(mov)
+            d[obtener_firma(g)] = camino
+        return d
+    inicioconfig = time.perf_counter()
+    pasos = [
+        (repscamino1, obtener_firma_G0_G1),
+        (repscamino2, obtener_firma_G1_G2),
+        (repscamino3, obtener_firma_G2_G3),
+        (repscamino4, obtener_firma_G3_G4),
+    ]
 
-def construir_dict(caminos, obtener_firma):
-    d = {}
-    for camino in caminos:
-        g = ID_CUBO
-        for mov in camino:
-            g = g * genname(mov)
-        d[obtener_firma(g)] = camino
-    return d
-inicioconfig = time.perf_counter()
-pasos = [
-    (repscamino1, obtener_firma_G0_G1),
-    (repscamino2, obtener_firma_G1_G2),
-    (repscamino3, obtener_firma_G2_G3),
-    (repscamino4, obtener_firma_G3_G4),
-]
+    dict_reps1, dict_reps2, dict_reps3, dict_reps4 = (construir_dict(caminos, firma) for caminos, firma in pasos)
+    finalconfig = time.perf_counter()
+    if debug: print(f"Tiempo configurando los representantes: {finalconfig - inicioconfig} segundos")
+    cola.put((dict_reps1, dict_reps2, dict_reps3, dict_reps4))
 
+cola = queue.Queue()
+t2 = threading.Thread(target=otrohilo, args=(cola,))
+t2.start()
 
-dict_reps1, dict_reps2, dict_reps3, dict_reps4 = (
-    construir_dict(caminos, firma) for caminos, firma in pasos
-)
-finalconfig = time.perf_counter()
-if debug: print(f"Tiempo configurando los representantes: {finalconfig - inicioconfig} segundos")
-
-def buscarsolvetw(scramble):
+def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
     print()
     print("Solución: ")
     if (scramble == ID_CUBO): 
@@ -337,9 +342,16 @@ def buscarsolvetw(scramble):
     print(str, "Cubo resuelto!")
     algfinal = algo1 + algo2 + algo3 + algo4
     return (algfinal)
-
+hasget = False
 print("Bienvenido al buscador de soluciones de cubo de Rubik 3x3x3")
 run = True
+# L B' L' B U' F' D L' U L U2 B D2 R D2 B2 F R2 D' L' D U B2 F D'
+dict_reps1 = []
+dict_reps2 = []
+dict_reps3 = []
+dict_reps4 = []
+
+
 while run:
     print("Ingrese 1 para realizar una solve, ingrese 2 para salir del programa")
     inp = input()
@@ -354,4 +366,8 @@ while run:
         for i in partes:
             mezclamoves = mezclamoves*genname(i)
     #print(mezclamoves)
-    buscarsolvetw(mezclamoves)
+    if not hasget: 
+        t2.join()
+        dict_reps1, dict_reps2, dict_reps3, dict_reps4 = cola.get()
+        hasget = True
+    buscarsolvetw(mezclamoves, dict_reps1, dict_reps2, dict_reps3, dict_reps4)

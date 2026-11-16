@@ -1,6 +1,157 @@
 import py5
+import json
+import queue
 from math import pi as PI
 from time import perf_counter as getTime
+from representantes import get_reps1, get_reps2, get_reps3, get_reps4
+# region
+
+
+cola = queue.Queue()
+
+def obtener_firma_G0_G1(g):
+    w_tupla = tuple(g.w)
+    return w_tupla
+def obtener_firma_G1_G2(g):
+  v_tupla = tuple(g.v)
+  e_slice_set = tuple(sorted(g.sigma[4:8]))
+  return (v_tupla, e_slice_set)
+def obtener_firma_G2_G3(estado):
+    aristas = tuple(sorted(estado.sigma[i] for i in (0, 2, 8, 10)))
+    rho = estado.rho
+    esquinas = min(tuple(rho[h[i]] for i in range(8)) for h in H)
+    return (aristas, esquinas)
+def obtener_firma_G3_G4(g):
+    v_tupla = tuple(g.v)
+    w_tupla = tuple(g.w)
+    rho = tuple(g.rho)
+    sigma = tuple(g.sigma)
+    return (v_tupla, w_tupla, rho, sigma)
+
+# archivoreps1 = False
+# archivoreps2 = False
+# archivoreps3 = False
+# archivoreps4 = False
+def configurararchivos(cola):
+    print("Haciendo cosas")
+    try:
+        with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
+            repscamino1 = json.load(file)
+        archivoreps1 = True
+    except FileNotFoundError:
+        pass
+    try:
+        with open('representantes/G1-G2.json', 'r', encoding='utf-8') as file:
+            repscamino2 = json.load(file)
+        archivoreps2 = True
+    except FileNotFoundError:
+        pass
+    try:
+        with open('representantes/G2-G3.json', 'r', encoding='utf-8') as file:
+            repscamino3 = json.load(file)
+        archivoreps3 = True
+    except FileNotFoundError:
+        pass
+    try:
+        with open('representantes/G3-G4.json', 'r', encoding='utf-8') as file:
+            repscamino4 = json.load(file)
+        archivoreps4 = True
+    except FileNotFoundError:
+        pass
+
+    if not archivoreps1:
+        get_reps1()
+        with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
+            repscamino1 = json.load(file)
+        archivoreps1 = True
+    if not archivoreps2:
+        get_reps2()
+        with open('representantes/G1-G2.json', 'r', encoding='utf-8') as file:
+            repscamino2 = json.load(file)
+        archivoreps2 = True
+    if not archivoreps3:
+        get_reps3()
+        with open('representantes/G2-G3.json', 'r', encoding='utf-8') as file:
+            repscamino3 = json.load(file)
+        archivoreps3 = True
+    if not archivoreps4:
+        get_reps4()
+        with open('representantes/G3-G4.json', 'r', encoding='utf-8') as file:
+            repscamino4 = json.load(file)
+        archivoreps4 = True
+    def construir_dict(caminos, obtener_firma):
+        d = {}
+        for camino in caminos:
+            g = ID_CUBO
+            for mov in camino:
+                g = g * genname(mov)
+            d[obtener_firma(g)] = camino
+        return d
+    inicioconfig = getTime()
+    pasos = [
+        (repscamino1, obtener_firma_G0_G1),
+        (repscamino2, obtener_firma_G1_G2),
+        (repscamino3, obtener_firma_G2_G3),
+        (repscamino4, obtener_firma_G3_G4),
+    ]
+
+    dict_reps1, dict_reps2, dict_reps3, dict_reps4 = (construir_dict(caminos, firma) for caminos, firma in pasos)
+    finalconfig = getTime()
+    if True: print(f"Tiempo configurando los representantes: {finalconfig - inicioconfig} segundos")
+    cola.put((dict_reps1, dict_reps2, dict_reps3, dict_reps4))
+
+def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
+    
+    alg1 = dict_reps1[obtener_firma_G0_G1(scramble)]
+    str = ""
+    algo1 = []
+    for i in alg1[::-1]:
+        gen = namegen(genname(i).inverso())
+        str += gen + " "
+        algo1.append(gen)
+    g1 = ID_CUBO
+    for i in alg1:
+        g1 = g1*genname(i)
+    if (scramble*g1.inverso() == ID_CUBO):
+        algfinal = algo1
+        return (algfinal)
+    alg2 = dict_reps2[obtener_firma_G1_G2(scramble*g1.inverso())]
+    algo2 = []
+    str = ""
+    for i in alg2[::-1]:
+        gen = namegen(genname(i).inverso())
+        str += gen + " "
+        algo2.append(gen)
+    g2 = ID_CUBO
+    for i in alg2:
+        g2 = g2*genname(i)
+
+    if (scramble*g1.inverso()*g2.inverso() == ID_CUBO):
+        algfinal = algo1 + algo2
+        return (algfinal)
+    alg3 = dict_reps3[obtener_firma_G2_G3(scramble*g1.inverso()*g2.inverso())]
+    str = ""
+    algo3 = []
+    for i in alg3[::-1]:
+        gen = namegen(genname(i).inverso())
+        str += gen + " "
+        algo3.append(gen)
+    g3 = ID_CUBO
+    for i in alg3:
+        g3 = g3*genname(i)
+
+    if (scramble*g1.inverso()*g2.inverso()*g3.inverso() == ID_CUBO):
+        algfinal = algo1 + algo2 + algo3
+        return (algfinal)
+    alg4 = dict_reps4[obtener_firma_G3_G4(scramble*g1.inverso()*g2.inverso()*g3.inverso())]
+    str = ""
+    algo4 = []
+    for i in alg4[::-1]:
+        gen = namegen(genname(i).inverso())
+        str += gen + " "
+        algo4.append(gen)
+    algfinal = algo1 + algo2 + algo3 + algo4
+    return (algfinal)
 
 setcoordedges = [
     # un array con las instrucciones para llegar a cada arista del cubo
@@ -207,7 +358,7 @@ def drawCorner(corner, orientation, t):
     py5.translate(-40*t, 0, 0)
 
     py5.rect_mode(py5.CORNER)
-
+# endregion
 class Rubik333:
     def __init__(self, v, w, rho, sigma):
         self.v = v[:]
@@ -219,6 +370,11 @@ class Rubik333:
         self.stopTurningtrigger = False
         self.faceToTurn = ""
         self.direction = 1
+        self.toSolve = []
+        self.turning = False
+        self.iniciosolve = 0
+        self.index = 0
+
     def __repr__(self):
         return f"v:{self.v}\nw:{self.w}\nrho:{self.rho}\nsigma:{self.sigma}"
     def __mul__(self, otro):
@@ -263,6 +419,45 @@ class Rubik333:
             return False
         return self.v == otro.v and self.w == otro.w and self.rho == otro.rho and self.sigma == otro.sigma
     def display(self, t):
+        if self.index != len(self.toSolve) and not self.turning:
+            if(self.toSolve[self.index] == "R" or self.toSolve[self.index] == "R2"):
+                self.turnR()
+            if(self.toSolve[self.index] == "R'"):
+                self.turnr()
+            if(self.toSolve[self.index] == "U" or self.toSolve[self.index] == "U2"):
+                self.turnU()
+            if(self.toSolve[self.index] == "U'"):
+                self.turnu()
+            if(self.toSolve[self.index] == "L" or self.toSolve[self.index] == "L2"):
+                self.turnL()
+            if(self.toSolve[self.index] == "L'"):
+                self.turnl()
+            if(self.toSolve[self.index] == "D" or self.toSolve[self.index] == "D2"):
+                self.turnD()
+            if(self.toSolve[self.index] == "D'"):
+                self.turnd()
+            if(self.toSolve[self.index] == "B" or self.toSolve[self.index] == "B2"):
+                self.turnB()
+            if(self.toSolve[self.index] == "B'"):
+                self.turnb()
+            if(self.toSolve[self.index] == "F" or self.toSolve[self.index] == "F2"):
+                self.turnF()
+            if(self.toSolve[self.index] == "F'"):
+                self.turnf()
+            self.turning = True
+        if (self.index < len(self.toSolve) and (getTime() - self.iniciosolve) > 0.4):
+            self.iniciosolve = getTime()
+            self.turning = False
+            if not ("2" in self.toSolve[self.index]):
+                self.index += 1
+            else:
+                self.toSolve[self.index] = self.toSolve[self.index].replace("2", "")
+        if(self.v == [0]*8 and self.w == [0]*12 and self.rho == range(8) and self.sigma == range(12)):
+            self.toSolve = []
+            self.turning = False
+            self.iniciosolve = 0
+            self.index = 0
+
         for z in range(12): # DRAW EDGES
             x = self.sigma[z]
             sigmainversa = [0]*12
@@ -541,7 +736,10 @@ class Rubik333:
         self.faceToTurn = "B"
         self.direction = -1
         pass
-
+    def solve(self, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
+        self.toSolve = buscarsolvetw(self.copy(), dict_reps1, dict_reps2, dict_reps3, dict_reps4)
+        self.iniciosolve = getTime()
+        self.index = 0
 ID_CUBO = Rubik333(
     [0]*8, [0]*12, 
     list(range(8)), list(range(12))
@@ -674,3 +872,18 @@ def genname(name):
     if (name == "B'"):
         return b
     return 0
+def generar_H():
+    gens = [tuple(g.rho) for g in (U2, D2, F2, B2, L2, R2)]
+    H = {tuple(range(8))}
+    frontera = [tuple(range(8))]
+    while frontera:
+        nueva = []
+        for h in frontera:
+            for g in gens:
+                n = tuple(g[h[i]] for i in range(8))
+                if n not in H:
+                    H.add(n)
+                    nueva.append(n)
+        frontera = nueva
+    return list(H)
+H = generar_H()

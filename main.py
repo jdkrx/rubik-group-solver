@@ -1,33 +1,45 @@
 import py5  # Esta libreria la puse para que nos haga de render
 from math import pi as PI # hola necesito a pi
 from py5ui import *
-from scenes.inicio import ui2
+from scenes.inicio import ui2, load, getcheckload
 from scenes.principal import ui, keyeventpress, keyeventrelease
 from scenes._scenes_main import *
 UIs = [ui2, ui]
 fontsize = 20
 
+resourcesstartedloading = False
+
 def setup():
     py5.size(800, 600, py5.P3D)
-    font = py5.create_font("DejaVu Sans", fontsize) # Aca se cambia la tipografia
-    py5.text_font(font) # Configuramos la letra
+    py5.background(255, 206, 237)
     py5.window_resizable(True)
+    py5.image_mode(py5.CENTER)
+    
+
 def draw():
+    global resourcesstartedloading
     sceenemanager.display()
+    if not resourcesstartedloading: # Cargar recursos despues de dibujar la escena
+        font = py5.create_font("DejaVu Sans", fontsize) # Aca se cambia la tipografia
+        py5.text_font(font) # Configuramos la letra
+        load()
+        archivos_config.start()
+        resourcesstartedloading = True
+
 def mouse_pressed():
+    if not getcheckload(): return
     for x in range(len(sceenemanager.scenes)):
         if sceenemanager.getScene() == x: UIs[x].checkClicked() # evaluar clicks de la ui
 def mouse_released():
+    if not getcheckload(): return
     for x in range(len(sceenemanager.scenes)):
         if sceenemanager.getScene() == x: UIs[x].checkReleased() # evaluar clicks de la ui
 def key_pressed():
-    pressed_key = py5.key
     if sceenemanager.getScene() == PRINCIPAL:
-        keyeventpress(pressed_key)
+        keyeventpress()
 def key_released():
-    released_key = py5.key
     if sceenemanager.getScene() == PRINCIPAL:
-        keyeventrelease(released_key)
+        keyeventrelease()
     
 py5.run_sketch()
 

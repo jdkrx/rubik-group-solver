@@ -7,6 +7,9 @@ from .cubos.cubo2x2 import cube
 from .cubos.cubo3x3 import *
 import random 
 
+CODIGOESPACIO = 32
+isCTRLPressed = False
+autoMode = False
 startTurningTrigger = False
 stopTurningTrigger = False
 ROTATING = True
@@ -20,6 +23,12 @@ scrambletext = ""
 c333 = ID_CUBO.copy()
 separation = 1
 canmove = False
+teclas_activas = set()
+
+dict_reps1 = []
+dict_reps2 = []
+dict_reps3 = []
+dict_reps4 = []
 
 # FUNCIONES DE PRUEBA PARA LOS BOTONES, TODOS HACEN LO MISMO
 def onclick():
@@ -75,7 +84,7 @@ def generar_scramble_3x3(min_giros=20, max_giros=25):
             c333 = c333*genname(i)
 
 
-#--- INTERFAZ
+# region --- INTERFAZ
 ui = UIManager() # Creamos una interfaz para la ventana cubo
 
 ui_texto_mezcla = ui.addElement(UIText(10, 70, f"Mezcla: {scrambletext}", 20, py5.color(0), ""))
@@ -106,7 +115,7 @@ topbar.addBarElement(barmenu2)
 
 barrasuperior = ui.addElement(topbar) # añadimos la barra a la interfaz
 ui.addElement(UIText(26, 23, "3", 15, py5.color(255), ""))
-#--- FIN INTERFAZ
+# endregion --- FIN INTERFAZ
 obj = cube()    
 #print(c333)
 def settheta0(): # REINICIA LA ESCENA Y SUS VARIABLES CADA VEZ QUE ENTRAS EN LA ESCENA
@@ -158,6 +167,10 @@ def animating():
     c333.display(separation)
  
 def principal():
+    global dict_reps1, dict_reps2, dict_reps3, dict_reps4
+    if dict_reps1 == []:
+        dict_reps1, dict_reps2, dict_reps3, dict_reps4 = cola.get()
+
     global theta, theta0, separation, phi, canmove
     py5.background(color_fondo_pantalla_cubo)
     py5.translate(py5.width / 2, py5.height / 2, -100)
@@ -168,36 +181,47 @@ def principal():
 
     ui.drawElements() # dibujar ui
 
-def keyeventpress(key):
-    global KEYPRESSED, ROTATING, inicio, theta0, theta, c333, canmove, startTurningTrigger, stopTurningTrigger
+def keyeventpress():
+    global KEYPRESSED, ROTATING, inicio, theta0, theta, c333, canmove, startTurningTrigger, stopTurningTrigger, teclas_activas, dict_reps1, dict_reps2, dict_reps3, dict_reps4
+    if py5.key == py5.CODED:
+        teclas_activas.add(py5.key_code)
+    else:
+        # .lower() evita errores si sueltas Shift antes que la letra
+        teclas_activas.add(str(py5.key).lower())
 
-    if not startTurningTrigger and key == " ":
-        startTurningTrigger = True
-        stopTurningTrigger = False
-        KEYPRESSED = True
-        ROTATING = False
-        inicio = time.perf_counter()
-        theta0 = theta
+    if  (' ' in teclas_activas) and not (startTurningTrigger) and not (py5.CONTROL in teclas_activas):#p
+            startTurningTrigger = True
+            stopTurningTrigger = False
+            KEYPRESSED = True
+            ROTATING = False
+            inicio = time.perf_counter()
+            theta0 = theta
+    if  (py5.CONTROL in teclas_activas) and (CODIGOESPACIO in teclas_activas):
+            print("test")
+            print(c333.solve(dict_reps1, dict_reps2, dict_reps3, dict_reps4))
     if canmove:
-        if key == 'j' or key == 'J': c333.turnU()
-        if key == 'f' or key == 'F': c333.turnu()
-        if key == 'i' or key == 'I': c333.turnR()
-        if key == 'k' or key == 'K': c333.turnr()
-        if key == 'd' or key == 'D': c333.turnL()
-        if key == 'e' or key == 'E': c333.turnl()
-        if key == 'h' or key == 'H': c333.turnF()
-        if key == 'g' or key == 'G': c333.turnf()
-        if key == 's' or key == 'S': c333.turnD()
-        if key == 'l' or key == 'L': c333.turnd()
-        if key == 'w' or key == 'W': c333.turnB()
-        if key == 'o' or key == 'O': c333.turnb()
-        if key == ' ': 
+        if py5.key == 'j' or py5.key == 'J': c333.turnU()
+        if py5.key == 'f' or py5.key == 'F': c333.turnu()
+        if py5.key == 'i' or py5.key == 'I': c333.turnR()
+        if py5.key == 'k' or py5.key == 'K': c333.turnr()
+        if py5.key == 'd' or py5.key == 'D': c333.turnL()
+        if py5.key == 'e' or py5.key == 'E': c333.turnl()
+        if py5.key == 'h' or py5.key == 'H': c333.turnF()
+        if py5.key == 'g' or py5.key == 'G': c333.turnf()
+        if py5.key == 's' or py5.key == 'S': c333.turnD()
+        if py5.key == 'l' or py5.key == 'L': c333.turnd()
+        if py5.key == 'w' or py5.key == 'W': c333.turnB()
+        if py5.key == 'o' or py5.key == 'O': c333.turnb()
+        if py5.key == ' ': 
             stopTurningTrigger = True
             startTurningTrigger = False
             canmove = False
             inicio = time.perf_counter()
 
     pass
-def keyeventrelease(key):
-    if canmove: print(key)
-    pass
+def keyeventrelease():
+    global teclas_activas
+    if py5.key == py5.CODED:
+        teclas_activas.discard(py5.key_code)
+    else:
+        teclas_activas.discard(str(py5.key).lower())
