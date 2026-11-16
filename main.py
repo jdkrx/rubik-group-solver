@@ -11,6 +11,7 @@ def setup():
     py5.size(800, 600, py5.P3D)
     font = py5.create_font("DejaVu Sans", fontsize) # Aca se cambia la tipografia
     py5.text_font(font) # Configuramos la letra
+    py5.window_resizable(True)
 def draw():
     sceenemanager.display()
 def mouse_pressed():

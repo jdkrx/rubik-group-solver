@@ -7,6 +7,8 @@ from .cubos.cubo2x2 import cube
 from .cubos.cubo3x3 import *
 import random 
 
+startTurningTrigger = False
+stopTurningTrigger = False
 ROTATING = True
 KEYPRESSED = False
 inicio = 0
@@ -105,59 +107,97 @@ topbar.addBarElement(barmenu2)
 barrasuperior = ui.addElement(topbar) # añadimos la barra a la interfaz
 ui.addElement(UIText(26, 23, "3", 15, py5.color(255), ""))
 #--- FIN INTERFAZ
-obj = cube()
+obj = cube()    
 #print(c333)
+def settheta0(): # REINICIA LA ESCENA Y SUS VARIABLES CADA VEZ QUE ENTRAS EN LA ESCENA
+    global theta, theta0, startTurningTrigger, stopTurningTrigger, ROTATING, KEYPRESSED, inicio, phi, scrambletext, c333, separation, canmove
+    startTurningTrigger = False
+    stopTurningTrigger = False
+    ROTATING = True
+    KEYPRESSED = False
+    inicio = 0
+    final = 0
+    theta = 0
+    phi = 0
+    theta0 = 0
+    scrambletext = ""
+    c333 = ID_CUBO.copy()
+    separation = 1
+    canmove = False
+    ui.elements[ui_texto_mezcla].text = "Mezcla: "
+def animating():
+    global theta, theta0, separation, phi, canmove, ROTATING, c333, startTurningTrigger, stopTurningTrigger
+    if ROTATING:
+        theta += 2*PI - 0.01
+        if (theta >= 2*PI): theta -= 2*PI
+        if (theta <= 0): theta += 2*PI
+    if startTurningTrigger:
+        ROTATING = False
+        if 0 <= time.perf_counter() - inicio <= 0.5: 
+            if theta >= PI: theta = theta0 + (2*PI - theta0)*(time.perf_counter() - inicio)/0.5
+            elif theta <= PI: theta = theta0 - (theta0)*(time.perf_counter() - inicio)/0.5
+        elif 0.5 <= time.perf_counter() - inicio <= 1:
+            t = time.perf_counter() - inicio - 0.5
+            separation = 1 + 0.2/0.5*t
+            phi = t*(PI/11)/0.5
+        else: 
+            theta = 0
+            phi = PI/11
+            separation = 1.2
+            canmove = True
+    if stopTurningTrigger:
+        if 0 <= time.perf_counter() - inicio <= 0.5:
+            t = time.perf_counter() - inicio
+            separation = 1.2 - 0.2/0.5*t
+            phi = PI/11 - t*(PI/11)/0.5
+        else:
+            ROTATING = True
+            phi = 0
+            separation = 1
+            KEYPRESSED = False
+    c333.display(separation)
+ 
 def principal():
     global theta, theta0, separation, phi, canmove
     py5.background(color_fondo_pantalla_cubo)
     py5.translate(py5.width / 2, py5.height / 2, -100)
     py5.rotate_x(-PI/6 - phi)
     py5.rotate_y(theta)
-    if ROTATING:
-        theta += 2*PI - 0.01
-        if (theta >= 2*PI): theta -= 2*PI
-        if (theta <= 0): theta += 2*PI
-    elif 0 <= time.perf_counter() - inicio <= 0.5: ## (2pi-theta0)*t
-        if theta >= PI: theta = theta0 + (2*PI - theta0)*(time.perf_counter() - inicio)/0.5
-        elif theta <= PI: theta = theta0 - (theta0)*(time.perf_counter() - inicio)/0.5
-    elif 0.5 <= time.perf_counter() - inicio <= 1:
-        t = time.perf_counter() - inicio - 0.5
-        separation = 1 + 0.2/0.5*t
-        phi = t*(PI/11)/0.5
-    else: 
-        theta = 0
-        phi = PI/11
-        separation = 1.2
-        canmove = True
-    c333.display(separation)
+    
+    animating()
 
     ui.drawElements() # dibujar ui
 
 def keyeventpress(key):
-    global KEYPRESSED, theta0, theta, c333, canmove
-    global ROTATING
-    global inicio
-    if not KEYPRESSED and key == " ":
+    global KEYPRESSED, ROTATING, inicio, theta0, theta, c333, canmove, startTurningTrigger, stopTurningTrigger
+
+    if not startTurningTrigger and key == " ":
+        startTurningTrigger = True
+        stopTurningTrigger = False
         KEYPRESSED = True
         ROTATING = False
         inicio = time.perf_counter()
         theta0 = theta
     if canmove:
-        if key == 'j' or key == 'J': c333 = c333*U
-        if key == 'f' or key == 'F': c333 = c333*u
-        if key == 'i' or key == 'I': c333 = c333*R
-        if key == 'k' or key == 'K': c333 = c333*r
-        if key == 'd' or key == 'D': c333 = c333*L
-        if key == 'e' or key == 'E': c333 = c333*l
-        if key == 'h' or key == 'H': c333 = c333*F
-        if key == 'g' or key == 'G': c333 = c333*f
-        if key == 's' or key == 'S': c333 = c333*D
-        if key == 'l' or key == 'L': c333 = c333*d
-        if key == 'w' or key == 'W': c333 = c333*B
-        if key == 'o' or key == 'O': c333 = c333*b
-        if c333 == ID_CUBO: canmove = False
+        if key == 'j' or key == 'J': c333.turnU()
+        if key == 'f' or key == 'F': c333.turnu()
+        if key == 'i' or key == 'I': c333.turnR()
+        if key == 'k' or key == 'K': c333.turnr()
+        if key == 'd' or key == 'D': c333.turnL()
+        if key == 'e' or key == 'E': c333.turnl()
+        if key == 'h' or key == 'H': c333.turnF()
+        if key == 'g' or key == 'G': c333.turnf()
+        if key == 's' or key == 'S': c333.turnD()
+        if key == 'l' or key == 'L': c333.turnd()
+        if key == 'w' or key == 'W': c333.turnB()
+        if key == 'o' or key == 'O': c333.turnb()
+        if key == ' ': 
+            stopTurningTrigger = True
+            startTurningTrigger = False
+            canmove = False
+            inicio = time.perf_counter()
 
     pass
 def keyeventrelease(key):
-    print(key)
+    if canmove: print(key)
     pass

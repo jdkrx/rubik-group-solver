@@ -1,5 +1,5 @@
 from scenes.inicio import inicio, ui2, botonirprincipal
-from scenes.principal import principal, ui, barrasuperior, botonvolverinicio
+from scenes.principal import principal, ui, barrasuperior, botonvolverinicio, settheta0
 from py5ui import SceneManager
 
 sceenemanager = SceneManager()
@@ -7,6 +7,7 @@ INICIO = sceenemanager.addScene(inicio)
 PRINCIPAL = sceenemanager.addScene(principal)
 
 def cambiaventanaclick():
+    settheta0()
     if sceenemanager.getScene() == INICIO: sceenemanager.sceneGoTo(PRINCIPAL)
     elif sceenemanager.getScene() == PRINCIPAL: sceenemanager.sceneGoTo(INICIO)
 

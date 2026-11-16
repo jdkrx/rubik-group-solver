@@ -1,5 +1,6 @@
 import py5
 from math import pi as PI
+from time import perf_counter as getTime
 
 setcoordedges = [
     # un array con las instrucciones para llegar a cada arista del cubo
@@ -73,21 +74,57 @@ corners = [
     ("D", "B", "R"), # 6
     ("D", "L", "B")  # 7
 ]
+F_LAYER = {
+    ("U", "F"),
+    ("F", "L"),
+    ("F", "R"),
+    ("D", "F"),
+    ("U", "F", "R"),
+    ("U", "L", "F"),
+    ("D", "F", "L"),
+    ("D", "R", "F")
+}
+
+B_LAYER = {
+    ("U", "B"),
+    ("B", "L"),
+    ("B", "R"),
+    ("D", "B"),
+    ("U", "B", "L"),
+    ("U", "R", "B"),
+    ("D", "B", "R"),
+    ("D", "L", "B") 
+}
+
 U_LAYER = {
     ("U", "B"),
     ("U", "R"),
     ("U", "F"),
     ("U", "L"),
     ("U", "B", "L"),
-    ("U", "B", "R"),
+    ("U", "R", "B"),
     ("U", "F", "R"),
-    ("U", "F", "L")
+    ("U", "L", "F"),
 }
-E_LAYER = {
-    ("B", "L"),
+L_LAYER = {
+    ("U", "L"),
     ("F", "L"),
+    ("D", "L"),
+    ("B", "L"),
+    ("U", "B", "L"),
+    ("U", "L", "F"),
+    ("D", "F", "L"),
+    ("D", "L", "B")
+}
+R_LAYER = {
+    ("U", "R"),
     ("F", "R"),
-    ("B", "R")
+    ("D", "R"),
+    ("B", "R"),
+    ("U", "R", "B"),
+    ("U", "F", "R"),
+    ("D", "R", "F"),
+    ("D", "B", "R")
 }
 D_LAYER = {
     ("D", "F"),
@@ -95,9 +132,18 @@ D_LAYER = {
     ("D", "B"),
     ("D", "L"),
     ("D", "F", "L"),
-    ("D", "F", "R"),
+    ("D", "R", "F"),
     ("D", "B", "R"),
-    ("D", "B", "L") 
+    ("D", "L", "B") 
+}
+
+layers = {
+    "U": U_LAYER,
+    "D": D_LAYER,
+    "R": R_LAYER,
+    "L": L_LAYER,
+    "F": F_LAYER,
+    "B": B_LAYER
 }
 
 # una pieza debe ser 80x80x80
@@ -168,6 +214,11 @@ class Rubik333:
         self.w = w[:]
         self.rho = rho[:]
         self.sigma = sigma[:]
+        self.inicio = 0
+        self.startTurningtrigger = False
+        self.stopTurningtrigger = False
+        self.faceToTurn = ""
+        self.direction = 1
     def __repr__(self):
         return f"v:{self.v}\nw:{self.w}\nrho:{self.rho}\nsigma:{self.sigma}"
     def __mul__(self, otro):
@@ -183,6 +234,22 @@ class Rubik333:
         nuevo_rho = [otro.rho[self.rho[i]] for i in range(8)]
         nuevo_sigma = [otro.sigma[self.sigma[i]] for i in range(12)]
         return Rubik333(nuevo_v, nuevo_w, nuevo_rho, nuevo_sigma)
+    def mul(self, otro):
+        rho_inv = [0]*8
+        sigma_inv = [0]*12
+
+        for i in range(8): rho_inv[otro.rho[i]] = i
+        for i in range(12): sigma_inv[otro.sigma[i]] = i
+
+        nuevo_v = [(otro.v[i] + self.v[rho_inv[i]]) % 3 for i in range(8)]
+        nuevo_w = [(otro.w[i] + self.w[sigma_inv[i]]) % 2 for i in range(12)]
+
+        nuevo_rho = [otro.rho[self.rho[i]] for i in range(8)]
+        nuevo_sigma = [otro.sigma[self.sigma[i]] for i in range(12)]
+        self.v = nuevo_v
+        self.w = nuevo_w
+        self.rho = nuevo_rho
+        self.sigma = nuevo_sigma
     def inverso(self):
         inv_rho = [0] * 8
         for i in range(8): inv_rho[self.rho[i]] = i
@@ -196,24 +263,45 @@ class Rubik333:
             return False
         return self.v == otro.v and self.w == otro.w and self.rho == otro.rho and self.sigma == otro.sigma
     def display(self, t):
-        for z in range(12):
+        for z in range(12): # DRAW EDGES
             x = self.sigma[z]
             sigmainversa = [0]*12
             for i in range(12): sigmainversa[self.sigma[i]] = i
             x = sigmainversa[z]
-
             y = self.w[z]
             a = setcoordedges[z][1][0]
             b = setcoordedges[z][1][1]
             c = setcoordedges[z][1][2]
+            if self.faceToTurn != "" and self.startTurningtrigger:
+                if (edges[z] in layers[self.faceToTurn]):
+                    if (getTime() - self.inicio >= 0.2):
+                        self.stopTurningtrigger = True
+                    if (self.faceToTurn == "R"): py5.rotate_x(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "L"): py5.rotate_x(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "U"): py5.rotate_y(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "D"): py5.rotate_y(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "F"): py5.rotate_z(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "B"): py5.rotate_z(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    pass
             py5.translate(a*t, b*t, c*t)
             py5.rotate_x(setcoordedges[z][0][0])
             py5.rotate_y(setcoordedges[z][0][1])
             drawEdge(edges[x], y, t)
             py5.rotate_y(-setcoordedges[z][0][1])
             py5.rotate_x(-setcoordedges[z][0][0])
-            py5.translate(-a*t, -b*t, -c*t)
-        for z in range(8):
+            py5.translate(-a*t, -b*t, -c*t) 
+            if self.faceToTurn != "" and self.startTurningtrigger:
+                if (edges[z] in layers[self.faceToTurn]):
+                    if (getTime() - self.inicio >= 0.2):
+                        self.stopTurningtrigger = True
+                    if (self.faceToTurn == "R"): py5.rotate_x(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "L"): py5.rotate_x(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "U"): py5.rotate_y(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "D"): py5.rotate_y(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "F"): py5.rotate_z(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "B"): py5.rotate_z(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    pass
+        for z in range(8): # DRAW CORNERS
             x = self.rho[z]
             rhoinversa = [0]*8
             for i in range(8): rhoinversa[self.rho[i]] = i
@@ -222,6 +310,17 @@ class Rubik333:
             a = setcoordcorners[z][1][0]
             b = setcoordcorners[z][1][1]
             c = setcoordcorners[z][1][2]
+            if self.faceToTurn != "" and self.startTurningtrigger:
+                if (corners[z] in layers[self.faceToTurn]):
+                    if (getTime() - self.inicio >= 0.2):
+                        self.stopTurningtrigger = True
+                    if (self.faceToTurn == "R"): py5.rotate_x(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "L"): py5.rotate_x(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "U"): py5.rotate_y(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "D"): py5.rotate_y(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "F"): py5.rotate_z(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "B"): py5.rotate_z(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    pass
             py5.translate(a*t, b*t, c*t)
             py5.rotate_x(setcoordcorners[z][0][0])
             py5.rotate_y(setcoordcorners[z][0][1])
@@ -229,10 +328,32 @@ class Rubik333:
             py5.rotate_y(-setcoordcorners[z][0][1])
             py5.rotate_x(-setcoordcorners[z][0][0])
             py5.translate(-a*t, -b*t, -c*t)
-        for z in range(6):
+            if self.faceToTurn != "" and self.startTurningtrigger:
+                if (corners[z] in layers[self.faceToTurn]):
+                    if (getTime() - self.inicio >= 0.2):
+                        self.stopTurningtrigger = True
+                    if (self.faceToTurn == "R"): py5.rotate_x(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "L"): py5.rotate_x(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "U"): py5.rotate_y(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "D"): py5.rotate_y(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "F"): py5.rotate_z(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "B"): py5.rotate_z(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    pass
+        for z in range(6): # DRAW CENTERS
             a = setcoordcenters[z][1][0]
             b = setcoordcenters[z][1][1]
             c = setcoordcenters[z][1][2]
+            if self.faceToTurn != "" and self.startTurningtrigger:
+                if (faces[z] == self.faceToTurn):
+                    if (getTime() - self.inicio >= 0.2):
+                        self.stopTurningtrigger = True
+                    if (self.faceToTurn == "R"): py5.rotate_x(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "L"): py5.rotate_x(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "U"): py5.rotate_y(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "D"): py5.rotate_y(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "F"): py5.rotate_z(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "B"): py5.rotate_z(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    pass
             py5.translate(a*t, b*t, c*t)
             py5.rotate_x(setcoordcenters[z][0][0])
             py5.rotate_y(setcoordcenters[z][0][1])
@@ -243,8 +364,183 @@ class Rubik333:
             py5.rotate_y(-setcoordcenters[z][0][1])
             py5.rotate_x(-setcoordcenters[z][0][0])
             py5.translate(-a*t, -b*t, -c*t)
+            if self.faceToTurn != "" and self.startTurningtrigger:
+                if (faces[z] == self.faceToTurn):
+                    if (getTime() - self.inicio >= 0.2):
+                        self.stopTurningtrigger = True
+                    if (self.faceToTurn == "R"): py5.rotate_x(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "L"): py5.rotate_x(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "U"): py5.rotate_y(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "D"): py5.rotate_y(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "F"): py5.rotate_z(-self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    if (self.faceToTurn == "B"): py5.rotate_z(self.direction*(getTime() - self.inicio)*PI/(2*0.2))
+                    pass
+        if self.stopTurningtrigger:
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+            self.stopTurningtrigger = False
+            self.startTurningtrigger = False
+            self.faceToTurn = ""
     def copy(self):
         return Rubik333(self.v, self.w, self.rho, self.sigma)
+    def turnR(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "R"
+        self.direction = 1
+        pass
+    def turnr(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "R"
+        self.direction = -1
+        pass
+    def turnL(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "L"
+        self.direction = 1
+        pass
+    def turnl(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "L"
+        self.direction = -1
+        pass
+    def turnU(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "U"
+        self.direction = 1
+        pass
+    def turnu(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "U"
+        self.direction = -1
+        pass
+    def turnD(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "D"
+        self.direction = 1
+        pass
+    def turnd(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "D"
+        self.direction = -1
+        pass
+    def turnF(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "F"
+        self.direction = 1
+        pass
+    def turnf(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "F"
+        self.direction = -1
+        pass
+    def turnB(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "B"
+        self.direction = 1
+        pass
+    def turnb(self):
+        if (self.startTurningtrigger):
+            self.startTurningtrigger = False
+            move = self.faceToTurn
+            if self.direction == -1: move += "'"
+            if self.direction ==  2: move += "2"
+            self.mul(genname(move))
+        self.inicio = getTime()
+        self.startTurningtrigger = True
+        self.stopTurningtrigger = False
+        self.faceToTurn = "B"
+        self.direction = -1
+        pass
 
 ID_CUBO = Rubik333(
     [0]*8, [0]*12, 
