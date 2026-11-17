@@ -251,7 +251,8 @@ def principal():
     #animating()
     py5.rotate_x(-PI/11)
     b333.draw_centers()
-    print(b333.get_available_colors(0))
+    
+    print(b333.get_available_colors(b333.index))
     b333.draw_stickers()
     #b333.draw_corners()
     #b333.draw_edges()
@@ -301,9 +302,17 @@ def keyeventpress():
             inicio = time.perf_counter()
             modolibre = False
     if (py5.key == "Q" or py5.key == 'q'):
-        b333.set_sticker("F")
+        b333.set_sticker("U")
     if (py5.key == "w" or py5.key == 'W'):
+        b333.set_sticker("L")
+    if (py5.key == "e" or py5.key == 'E'):
+        b333.set_sticker("F")
+    if (py5.key == "r" or py5.key == 'R'):
         b333.set_sticker("R")
+    if (py5.key == "t" or py5.key == 'T'):
+        b333.set_sticker("B")
+    if (py5.key == "y" or py5.key == 'Y'):
+        b333.set_sticker("D")
     pass
 def keyeventrelease():
     global teclas_activas

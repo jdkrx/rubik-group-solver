@@ -102,7 +102,7 @@ def configurararchivos(cola):
     cola.put((dict_reps1, dict_reps2, dict_reps3, dict_reps4))
 
 def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4, spacing):
-    
+
     alg1 = dict_reps1[obtener_firma_G0_G1(scramble)]
     str = ""
     algo1 = []
@@ -165,7 +165,7 @@ setcoordedges = [
     [(0, PI/2), (80, -80, 0)],      # UR
     [(0, 0), (0, -80, 80)],         # UF
     [(0, -PI/2), (-80, -80, 0)],    # UL
-    [(PI/2, -PI/2), (-80, 0, -80)], # BL 
+    [(PI/2, -PI/2), (-80, 0, -80)], # BL
     [(-PI/2, -PI/2), (-80, 0, 80)], # FL
     [(-PI/2, PI/2), (80, 0, 80)],   # FR
     [(PI/2, PI/2), (80, 0, -80)],   # BR
@@ -249,7 +249,7 @@ B_LAYER = {
     ("U", "B", "L"),
     ("U", "R", "B"),
     ("D", "B", "R"),
-    ("D", "L", "B") 
+    ("D", "L", "B")
 }
 
 U_LAYER = {
@@ -290,7 +290,7 @@ D_LAYER = {
     ("D", "F", "L"),
     ("D", "R", "F"),
     ("D", "B", "R"),
-    ("D", "L", "B") 
+    ("D", "L", "B")
 }
 
 layers = {
@@ -304,7 +304,7 @@ layers = {
 # endregion
 # una pieza debe ser 80x80x80
 def drawEdge(edge, orientation, t):
-    if t==-1: 
+    if t==-1:
         t2 = -1
         t=1
     else: t2 = 1
@@ -313,7 +313,7 @@ def drawEdge(edge, orientation, t):
     py5.stroke(0)
     py5.rect_mode(py5.CENTER)
 
-    
+
     py5.translate(0, 0, 40*t)
     if t2 == 1: py5.fill(palette[corner[1]])
     if t2 ==-1: py5.fill(50, 50, 50)
@@ -329,8 +329,8 @@ def drawEdge(edge, orientation, t):
     py5.rotate_x(-PI/2)
     py5.translate(0, 40*t, 0)
     py5.rect_mode(py5.CORNER)
-def drawCorner(corner, orientation, t, config = []): 
-    if t==-1: 
+def drawCorner(corner, orientation, t, config = []):
+    if t==-1:
         t2 = -1
         t=1
     else: t2 = 1
@@ -342,7 +342,7 @@ def drawCorner(corner, orientation, t, config = []):
 
     py5.translate(0, 0, 40*t)
     if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1: 
+    if t2 ==-1:
         py5.fill(50, 50, 50)
         if config != []:
             if config[0][0] == 1:
@@ -353,7 +353,7 @@ def drawCorner(corner, orientation, t, config = []):
     py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
     if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1: 
+    if t2 ==-1:
         py5.fill(50, 50, 50)
         if config != []:
             if config[1][0] == 1:
@@ -365,7 +365,7 @@ def drawCorner(corner, orientation, t, config = []):
     py5.translate(40*t, 0, 0)
     py5.rotate_y(PI/2)
     if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1: 
+    if t2 ==-1:
         py5.fill(50, 50, 50)
         if config != []:
             if config[2][0] == 1:
@@ -384,56 +384,48 @@ setcoordstickers = [
     [(PI/2, 0), (80, -120, 0)],                  #3
     [(PI/2, 0), (80, -120, 80)],   # UFR         #4
     [(PI/2, 0), (0, -120, 80)],                  #5
-    [(PI/2, 0), (-80, -120, 80)],                #6    
+    [(PI/2, 0), (-80, -120, 80)],                #6
     [(PI/2, 0), (-80, -120, 0)],  # UFL          #7     #U
     [(0, PI/2), (-120, -80,-80)],                #8
-    [(0, PI/2), (-120, -80, 0)],     # DFL       #9  
+    [(0, PI/2), (-120, -80, 0)],     # DFL       #9
     [(0, PI/2), (-120, -80, 80)],    # DFR       #10
-    [(0, PI/2), (-120, 0, 80)],      # DBR       #11        
-    [(0, PI/2), (-120, 80, 80)]  # DBL           #12
-    [(0, PI/2), (-120, 80, 0)]                   #13
-    [(0, PI/2), (-120, 80, -80)]                 #14
-    [(0, PI/2), (-120, 0, -80)]                  #15   #L
-    [(0, 0), (-80, -80, 120)]                    #16
-    [(0, 0), (0, -80, 120)]                      #17
-    [(0, 0), (80, -80, 120)]                     #18
-    [(0, 0), (80, 0, 120)]                       #19
-    [(0, 0), (80, 80, 120)]                      #20
-    [(0, 0), (0, 80, 120)]                       #21
-    [(0, 0), (-80, 80, 120)]                     #22
-    [(0, 0), (-80, 0, 120)]                      #23   #F
-    [(0, PI/2), (120, -80, 80)]                  #24
-    [(0, PI/2), (120, -80, 0)]                   #25
-    [(0, PI/2), (120, -80, -80)]                 #26
-    [(0, PI/2), (120, 0, -80)]                   #27
-    [(0, PI/2), (120, 80, -80)]                  #28
-    [(0, PI/2), (120, 80, 0)]                    #29
-    [(0, PI/2), (120, 80, 80)]                   #30
-    [(0, PI/2), (120, 0, 80)]                    #31  #R
-    [(0, 0), (80, -80, -120)]                    #32
-    [(0, 0), (0, -80, -120)]                     #33
-    [(0, 0), (-80, -80, -120)]                   #34
-    [(0, 0), (-80, 0, -120)]                     #35
-    [(0, 0), (-80, 80, -120)]                    #36
-    [(0, 0), (0, 80, -120)]                      #37
-    [(0, 0), (80, 80, -120)]                     #38
-    [(0, 0), (80, 0, -120)]                      #39  #B
-    [(PI/2, 0), (-80, 120, 80)]                  #40
-    [(PI/2, 0), (0, 120, 80)]                    #41
-    [(PI/2, 0), (80, 120, 80)]                   #42
-    [(PI/2, 0), (80, 120, 0)]                    #43
-    [(PI/2, 0), (80, 120, -80)]                  #44
-    [(PI/2, 0), (0, 120, -80)]                   #45
-    [(PI/2, 0), (-80, 120, -80)]                 #46
-    [(PI/2, 0), (-80, 120, 0)]                   #47  #D 
-    
-
-
-
-
-
-
-
+    [(0, PI/2), (-120, 0, 80)],      # DBR       #11
+    [(0, PI/2), (-120, 80, 80)], # DBL           #12
+    [(0, PI/2), (-120, 80, 0)],                  #13
+    [(0, PI/2), (-120, 80, -80)],                #14
+    [(0, PI/2), (-120, 0, -80)],                 #15   #L
+    [(0, 0), (-80, -80, 120)],                   #16
+    [(0, 0), (0, -80, 120)],                     #17
+    [(0, 0), (80, -80, 120)],                    #18
+    [(0, 0), (80, 0, 120)],                      #19
+    [(0, 0), (80, 80, 120)],                     #20
+    [(0, 0), (0, 80, 120)],                      #21
+    [(0, 0), (-80, 80, 120)],                    #22
+    [(0, 0), (-80, 0, 120)],                     #23   #F
+    [(0, PI/2), (120, -80, 80)],                 #24
+    [(0, PI/2), (120, -80, 0)],                  #25
+    [(0, PI/2), (120, -80, -80)],                #26
+    [(0, PI/2), (120, 0, -80)],                  #27
+    [(0, PI/2), (120, 80, -80)],                 #28
+    [(0, PI/2), (120, 80, 0)],                   #29
+    [(0, PI/2), (120, 80, 80)],                  #30
+    [(0, PI/2), (120, 0, 80)],                   #31  #R
+    [(0, 0), (80, -80, -120)],                   #32
+    [(0, 0), (0, -80, -120)],                    #33
+    [(0, 0), (-80, -80, -120)],                  #34
+    [(0, 0), (-80, 0, -120)],                    #35
+    [(0, 0), (-80, 80, -120)],                   #36
+    [(0, 0), (0, 80, -120)],                     #37
+    [(0, 0), (80, 80, -120)],                    #38
+    [(0, 0), (80, 0, -120)],                     #39  #B
+    [(PI/2, 0), (-80, 120, 80)],                 #40
+    [(PI/2, 0), (0, 120, 80)],                   #41
+    [(PI/2, 0), (80, 120, 80)],                  #42
+    [(PI/2, 0), (80, 120, 0)],                   #43
+    [(PI/2, 0), (80, 120, -80)],                 #44
+    [(PI/2, 0), (0, 120, -80)],                  #45
+    [(PI/2, 0), (-80, 120, -80)],                #46
+    [(PI/2, 0), (-80, 120, 0)]                   #47  #D
  ]
 
 def drawSticker(index, color):
@@ -577,7 +569,7 @@ class Rubik333:
             drawEdge(edges[x], y, t)
             py5.rotate_y(-setcoordedges[z][0][1])
             py5.rotate_x(-setcoordedges[z][0][0])
-            py5.translate(-a*t, -b*t, -c*t) 
+            py5.translate(-a*t, -b*t, -c*t)
             if self.faceToTurn != "" and self.startTurningtrigger:
                 if (edges[z] in layers[self.faceToTurn]):
                     if (getTime() - self.inicio >= 0.2):
@@ -836,19 +828,19 @@ class Rubik333:
     def getsolve(self, dict_reps1, dict_reps2, dict_reps3, dict_reps4):
         return buscarsolvetw(self.copy(), dict_reps1, dict_reps2, dict_reps3, dict_reps4, True)
 ID_CUBO = Rubik333(
-    [0]*8, [0]*12, 
+    [0]*8, [0]*12,
     list(range(8)), list(range(12))
 )
 U = Rubik333(
     v=[0, 0, 0, 0, 0, 0, 0, 0],
     w=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     rho=[1, 2, 3, 0, 4, 5, 6, 7],
-    sigma=[1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11] 
+    sigma=[1, 2, 3, 0, 4, 5, 6, 7, 8, 9, 10, 11]
 )
 R = Rubik333(
     v=[0, 1, 2, 0, 0, 1, 2, 0],
     w=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    rho=[0, 6, 1, 3, 4, 2, 5, 7], 
+    rho=[0, 6, 1, 3, 4, 2, 5, 7],
     sigma=[0, 7, 2, 3, 4, 5, 1, 9, 8, 6, 10, 11]
 )
 L = Rubik333(
@@ -1037,13 +1029,19 @@ class Build333:
     def __init__(self):
         self.array = [-1]*48
         self.state = [-1]*48
-        self.indexcorners = 0
-        self.indexedges = 0
+        self.index = 0
     def set_sticker(self, color):
-        self.array[self.indexcorners] = color
-        self.indexcorners+=1
+        if color in self.get_available_colors(self.index):
+            self.array[self.index] = color
+            self.index+=1
+
     def get_available_colors(self, index):
         if index%2==1: #es una arista
+            for x in edgesid:
+                if index in x:
+                    indexes = x
+            print(indexes)
+            indextuple = tuple(indexes)
             posibilidades1 = []
             if self.array[index] == "U":
                 posibilidades1 = [1, 3, 5, 7]
@@ -1059,8 +1057,11 @@ class Build333:
                 posibilidades1 = [41, 43, 45, 47]
             posibilidades2 = set()
             for x in posibilidades1:
-                if indextopiece(x)[0] == indextocolor(x): posibilidades2.add(indextopiece(x))
-                if indextopiece(x)[1] == indextocolor(x): posibilidades2.add(indextopiece(x))
+                if indextopiece(x)[0] == indextocolor(x): posibilidades2.add(indextopiece(x)[1])
+                if indextopiece(x)[1] == indextocolor(x): posibilidades2.add(indextopiece(x)[0])
+            posibilidades3 = set()
+            if posibilidades2==set():
+                return {"F", "B", "L", "R", "U", "D"}
             return posibilidades2
             pass
         if index%2==0: #es esquina
@@ -1077,18 +1078,20 @@ class Build333:
                 posibilidades1 = [32, 34, 36, 38]
             if self.array[index] == "D":
                 posibilidades1 = [40, 42, 44, 46]
-            print(posibilidades1)
+            #print(posibilidades1)
             posibilidades2 = set()
             for x in posibilidades1:
-                if indextopiece(x)[0] == indextocolor(x): 
-                    posibilidades2.add(indextopiece(x))
-                    posibilidades2.add(indextopiece(x))
-                if indextopiece(x)[1] == indextocolor(x): 
-                    posibilidades2.add(indextopiece(x))
-                    posibilidades2.add(indextopiece(x))
-                if indextopiece(x)[2] == indextocolor(x): 
-                    posibilidades2.add(indextopiece(x))
-                    posibilidades2.add(indextopiece(x))
+                if indextopiece(x)[0] == indextocolor(x):
+                    posibilidades2.add(indextopiece(x)[1])
+                    posibilidades2.add(indextopiece(x)[2])
+                if indextopiece(x)[1] == indextocolor(x):
+                    posibilidades2.add(indextopiece(x)[0])
+                    posibilidades2.add(indextopiece(x)[2])
+                if indextopiece(x)[2] == indextocolor(x):
+                    posibilidades2.add(indextopiece(x)[0])
+                    posibilidades2.add(indextopiece(x)[1])
+            if posibilidades2==set():
+                return {"F", "B", "L", "R", "U", "D"}
             return posibilidades2
     def draw_centers(self):
         for z in range(6): # DRAW CENTERS
@@ -1108,18 +1111,19 @@ class Build333:
     def draw_stickers(self):
         for z in range(48):
             if (self.array[z] == -1):
-                pass
+                py5.fill(50, 50, 50)
             else:
-                a = setcoordstickers[z][1][0]
-                b = setcoordstickers[z][1][1]
-                c = setcoordstickers[z][1][2]
-                py5.translate(a, b, c)
-                py5.rotate_x(setcoordstickers[z][0][0])
-                py5.rotate_y(setcoordstickers[z][0][1])
                 py5.fill(palette[self.array[z]])
-                py5.rect_mode(py5.CENTER)
-                py5.rect(0, 0, 80, 80)
-                py5.rect_mode(py5.CORNER)
-                py5.rotate_y(-setcoordstickers[z][0][1])
-                py5.rotate_x(-setcoordstickers[z][0][0])
-                py5.translate(-a, -b, -c)
+
+            a = setcoordstickers[z][1][0]
+            b = setcoordstickers[z][1][1]
+            c = setcoordstickers[z][1][2]
+            py5.translate(a, b, c)
+            py5.rotate_x(setcoordstickers[z][0][0])
+            py5.rotate_y(setcoordstickers[z][0][1])
+            py5.rect_mode(py5.CENTER)
+            py5.rect(0, 0, 80, 80)
+            py5.rect_mode(py5.CORNER)
+            py5.rotate_y(-setcoordstickers[z][0][1])
+            py5.rotate_x(-setcoordstickers[z][0][0])
+            py5.translate(-a, -b, -c)
