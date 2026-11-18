@@ -38,6 +38,7 @@ def onclick():
     print("helloworld")
 def onpress():
     print(f"mouse x: {py5.mouse_x}")
+# Contribucion externa
 def generar_scramble_3x3(min_giros=20, max_giros=25):
     global startedSolving, ROTATING, cubo_is_solving
     ejes = [
@@ -75,6 +76,7 @@ def generar_scramble_3x3(min_giros=20, max_giros=25):
         ultima_cara = cara_actual
     mezcla = " ".join(scramble)
     print (" ".join(scramble))
+    # fin contribucion externa
     global c333, scrambletext
     scrambletext = ""
     scrambletext += mezcla
@@ -97,11 +99,14 @@ ui_texto_mezcla = ui.addElement(UIText(10, 60, f"Mezcla: {scrambletext}", 20, py
 sceenemanager = SceneManager()
 
 topbar = UITopBar(45, config_barra) # Hacemo un elemento de barra superior
-
+def buttoningresarcolores():
+    global finishedbuildingcube, b333
+    b333 = Build333()
+    finishedbuildingcube = False
 barmenu0 = UIBarMenu(115, 45, "Mezcla", fontsize, config_barmenu1) # creamos un menu
 barmenu0.addElement(UIBarButton(120, "Nueva Mezcla", fontsize, generar_scramble_3x3, funcionvacia, config_barmenu2)) # Ingresamos elementos al menu
 barmenu0.addElement(UIBarButton(115, "Editar Mezcla", fontsize, onclick, onpress, config_barmenu2))
-barmenu0.addElement(UIBarButton(200, "Ingresar Colores", fontsize, onclick, onpress, config_barmenu2))
+barmenu0.addElement(UIBarButton(200, "Ingresar Colores", fontsize, buttoningresarcolores, funcionvacia, config_barmenu2))
 barmenu0.addElement(UIBarButton(115, "Ingresar Mezcla", fontsize, onclick, onpress, config_barmenu2))
 
 barmenu1 = UIBarMenu(80, 45, "Cubo", fontsize, config_barmenu1) # Hacemos otro menu
@@ -150,6 +155,9 @@ def buttonmostrarsolve():
         solvestr += x
         if "\n" not in x: solvestr += " "
     ui.elements[textboxsolveid].text = "Solución:\n" + solvestr
+
+
+
 
 barrasuperior = ui.addElement(topbar) # añadimos la barra a la interfaz
 ui.addElement(UIText(26, 23, "3", 15, py5.color(255), ""))
@@ -278,7 +286,7 @@ for name in ("U","R","F","D","L","B"):
     assert b.build() == g, f"falla con {name}"
     print(f"{name} OK")
 
-finishedbuildingcube = False
+finishedbuildingcube = True
 def principal():
     global finishedbuildingcube
 
@@ -288,9 +296,9 @@ def principal():
     ui.elements[textboxsolveid].y = py5.height -131
     ui.elements[textboxsolveid].width = py5.width - 184
     ui.elements[textboxsolveid].height = py5.height -134
-    # global dict_reps1, dict_reps2, dict_reps3, dict_reps4
-    # if dict_reps1 == []:
-    #     dict_reps1, dict_reps2, dict_reps3, dict_reps4 = cola.get()
+    global dict_reps1, dict_reps2, dict_reps3, dict_reps4
+    if dict_reps1 == []:
+        dict_reps1, dict_reps2, dict_reps3, dict_reps4 = cola.get()
 
     global theta, theta0, separation, phi, canmove
     py5.background(color_fondo_pantalla_cubo)
@@ -330,10 +338,6 @@ def principal():
         print(b333.get_available_colors(b333.index))
         print(b333.edges)
         b333.draw_stickers() 
-        
-    #b333.draw_corners()
-    #b333.draw_edges()
-
     ui.drawElements() # dibujar ui
 
 
@@ -347,7 +351,7 @@ def keyeventpress():
         # .lower() evita errores si sueltas Shift antes que la letra
         teclas_activas.add(str(py5.key).lower())
 
-    if  (' ' in teclas_activas) and not (startTurningTrigger) and not (py5.CONTROL in teclas_activas) and not modolibre:#p
+    if  (' ' in teclas_activas) and not (startTurningTrigger) and not (py5.CONTROL in teclas_activas) and not modolibre and finishedbuildingcube:#p
         startTurningTrigger = True
         stopTurningTrigger = False
         KEYPRESSED = True
@@ -355,7 +359,7 @@ def keyeventpress():
         inicio = time.perf_counter()
         theta0 = theta
         modolibre = True
-    if  (py5.CONTROL in teclas_activas) and (CODIGOESPACIO in teclas_activas) and not modolibre:
+    if  (py5.CONTROL in teclas_activas) and (CODIGOESPACIO in teclas_activas) and not modolibre and finishedbuildingcube:
         cubo_is_solving = True
         inicioSolving = time.perf_counter()
         theta0 = theta
@@ -373,7 +377,7 @@ def keyeventpress():
         if py5.key == 'l' or py5.key == 'L': c333.turnd()
         if py5.key == 'w' or py5.key == 'W': c333.turnB()
         if py5.key == 'o' or py5.key == 'O': c333.turnb()
-        if py5.key == ' ': 
+        if py5.key == ' ' and finishedbuildingcube: 
             stopTurningTrigger = True
             startTurningTrigger = False
             canmove = False
@@ -392,6 +396,7 @@ def keyeventpress():
         b333.set_sticker("B")
     if (py5.key == "y" or py5.key == 'Y'):
         b333.set_sticker("D")
+    if (py5.key == " " and not finishedbuildingcube): b333.delete_sticker()
     if (b333.array[47] != -1 and py5.key in {"q", "Q", "w", "W", "e", "E", "r", "R", "t", "T", "y", "Y"}):
         finishedbuildingcube = True
         try:

@@ -28,16 +28,16 @@ def draw():
     if not resourcesstartedloading: # Cargar recursos despues de dibujar la escena
         font = py5.create_font("DejaVu Sans", fontsize) # Aca se cambia la tipografia
         py5.text_font(font) # Configuramos la letra
-        #load()
-        #archivos_config.start()
+        load()
+        archivos_config.start()
         resourcesstartedloading = True
 
 def mouse_pressed():
-    #if not getcheckload(): return
+    if not getcheckload(): return
     for x in range(len(sceenemanager.scenes)):
         if sceenemanager.getScene() == x: UIs[x].checkClicked() # evaluar clicks de la ui
 def mouse_released():
-    #if not getcheckload(): return
+    if not getcheckload(): return
     for x in range(len(sceenemanager.scenes)):
         if sceenemanager.getScene() == x: UIs[x].checkReleased() # evaluar clicks de la ui
 def key_pressed():
@@ -48,6 +48,3 @@ def key_released():
         keyeventrelease()
     
 py5.run_sketch()
-
-
-

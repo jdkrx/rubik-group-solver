@@ -13,7 +13,7 @@ hasloaded = False
 frames = []
 counter = 0
 
-checkload = ["testing"]
+checkload = []
 
 def inicio():
     global frames, counter, isReady, hasloaded, checkload
@@ -33,10 +33,9 @@ def inicio():
         if isReady and len(frames) == 10:
             hasloaded = True
             py5.image(frames[int(counter)%10].result, py5.width/2, py5.height/2)
-    #else: ui2.drawElements()
-    # if not cola.empty():
-    #     checkload.append("listo")
-    ui2.drawElements()
+    else: ui2.drawElements()
+    if not cola.empty():
+         checkload.append("listo")
 
 def load():
     global frames

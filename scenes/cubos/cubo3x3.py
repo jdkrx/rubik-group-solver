@@ -28,12 +28,12 @@ def obtener_firma_G3_G4(g):
     sigma = tuple(g.sigma)
     return (v_tupla, w_tupla, rho, sigma)
 
-archivoreps1 = False
-archivoreps2 = False
-archivoreps3 = False
-archivoreps4 = False
+#archivoreps1 = False
+#archivoreps2 = False
+#archivoreps3 = False
+#archivoreps4 = False
 def configurararchivos(cola):
-    global archivoreps1, archivoreps2, archivoreps3, archivoreps4
+    #global archivoreps1, archivoreps2, archivoreps3, archivoreps4
     print("Haciendo cosas")
     try:
         with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
@@ -59,7 +59,7 @@ def configurararchivos(cola):
         archivoreps4 = True
     except FileNotFoundError:
         pass
-    repscamino1, repscamino2, repscamino3, repscamino4 = ("", "", "", "")
+    #repscamino1, repscamino2, repscamino3, repscamino4 = ("", "", "", "")
     if not archivoreps1:
         get_reps1()
         with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
@@ -1138,6 +1138,10 @@ class Build333:
         if self.index < 47:              # fix del bug `self.array != 47`
             self.index += 1
         return True
+    def delete_sticker(self):
+        if self.index > 0:
+            self.array[self.index-1] = -1
+            self.index -= 1
     def build(self):
         """Devuelve un Rubik333 con el estado de pegatinas actual."""
         if -1 in self.array:
