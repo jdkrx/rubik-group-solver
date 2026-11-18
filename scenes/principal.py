@@ -2,7 +2,6 @@ import py5
 import py5ui
 import time
 from .styles import *
-from math import pi as PI
 from .cubos.cubo2x2 import cube
 from .cubos.cubo3x3 import *
 import random 
@@ -161,6 +160,7 @@ textboxsolveid = ui.addElement(UITextBox(194, py5.height -131, py5.width - 184, 
 # endregion --- FIN INTERFAZ
 obj = cube()    
 #print(c333)
+
 def settheta0(): # REINICIA LA ESCENA Y SUS VARIABLES CADA VEZ QUE ENTRAS EN LA ESCENA
     global theta, theta0, startTurningTrigger, stopTurningTrigger, ROTATING, KEYPRESSED, inicio, phi, scrambletext, c333, separation, canmove
     startTurningTrigger = False
@@ -225,13 +225,63 @@ def animating():
     c333.display(separation)
 
 # region crear 
+c333 = ID_CUBO.copy()
 b333 = Build333()
 stickers = [""]*48
 
 # endregion
 
 
+# Caso identidad
+b = Build333()
+b.array = ["U"]*8 + ["L"]*8 + ["F"]*8 + ["R"]*8 + ["B"]*8 + ["D"]*8
+b.index = 47
+assert b.build() == ID_CUBO, "falla con el cubo resuelto"
+print("ID_CUBO OK")
+
+# Caso con cada movimiento
+def to_array(r):
+    """Convierte un Rubik333 en el array de 48 colores que vería el usuario."""
+    def order(sset, tup):
+        out, rem = [], list(sset)
+        for c in tup:
+            for s in rem:
+                if indextocolor(s) == c:
+                    out.append(s)
+                    rem.remove(s)
+                    break
+        return out
+
+    rho_inv = [0] * 8
+    for i in range(8):
+        rho_inv[r.rho[i]] = i
+        
+    sigma_inv = [0] * 12
+    for i in range(12):
+        sigma_inv[r.sigma[i]] = i
+
+    arr = [-1] * 48
+    for z in range(8):
+        x = rho_inv[z]
+        for k, s in enumerate(order(cornersid[z], corners[z])):
+            arr[s] = corners[x][(r.v[z] + k) % 3]
+    for z in range(12):
+        x = sigma_inv[z]
+        for k, s in enumerate(order(edgesid[z], edges[z])):
+            arr[s] = edges[x][(r.w[z] + k) % 2]
+    return arr
+for name in ("U","R","F","D","L","B"):
+    g = genname(name)
+    b = Build333()
+    b.array = to_array(g)
+    b.index = 47
+    assert b.build() == g, f"falla con {name}"
+    print(f"{name} OK")
+
+finishedbuildingcube = False
 def principal():
+    global finishedbuildingcube
+
     ui.elements[botonresolverid].y = py5.height -46
     ui.elements[botonmodolibreid].y = py5.height -90
     ui.elements[botonversolveid].y = py5.height - 134
@@ -246,14 +296,41 @@ def principal():
     py5.background(color_fondo_pantalla_cubo)
     py5.translate(py5.width / 2, py5.height / 2, -100)
     py5.rotate_x(-PI/6 - phi)
-    py5.rotate_y(theta)
+    py5.rotate_y(theta)  
+    if not finishedbuildingcube:
+        if (0 <= b333.index <= 7):
+            phi = 2*PI/11
+            theta = 0
+        elif (8 <= b333.index <= 15):
+            phi = 0
+            theta = PI/2
+        elif (16 <= b333.index <= 23):
+            phi = 0
+            theta = 0
+        elif (24 <= b333.index <= 31):
+            phi = 0
+            theta = -PI/2
+        elif (32 <= b333.index <= 39):
+            phi = 0
+            theta = -PI
+        elif (40 <= b333.index <= 47):
+            phi = -PI/2
+            theta = 0
+        if finishedbuildingcube:
+            phi = 0
+            theta = 0
+    else:  
+        animating()
     
-    #animating()
-    py5.rotate_x(-PI/11)
-    b333.draw_centers()
+
     
-    print(b333.get_available_colors(b333.index))
-    b333.draw_stickers()
+    if not finishedbuildingcube:
+        b333.draw_centers()
+    
+        print(b333.get_available_colors(b333.index))
+        print(b333.edges)
+        b333.draw_stickers() 
+        
     #b333.draw_corners()
     #b333.draw_edges()
 
@@ -262,6 +339,7 @@ def principal():
 
 
 def keyeventpress():
+    global finishedbuildingcube, phi
     global KEYPRESSED, ROTATING, inicio, modolibre, theta0, theta, c333, cubo_is_solving, inicioSolving, canmove, startTurningTrigger, stopTurningTrigger, teclas_activas, dict_reps1, dict_reps2, dict_reps3, dict_reps4
     if py5.key == py5.CODED:
         teclas_activas.add(py5.key_code)
@@ -301,6 +379,7 @@ def keyeventpress():
             canmove = False
             inicio = time.perf_counter()
             modolibre = False
+    if finishedbuildingcube: return
     if (py5.key == "Q" or py5.key == 'q'):
         b333.set_sticker("U")
     if (py5.key == "w" or py5.key == 'W'):
@@ -313,6 +392,15 @@ def keyeventpress():
         b333.set_sticker("B")
     if (py5.key == "y" or py5.key == 'Y'):
         b333.set_sticker("D")
+    if (b333.array[47] != -1 and py5.key in {"q", "Q", "w", "W", "e", "E", "r", "R", "t", "T", "y", "Y"}):
+        finishedbuildingcube = True
+        try:
+            c333 = b333.build()
+            print("OK:", c333)
+        except ValueError as e:
+            print("Fallo build():", e)
+            b333.diagnose()
+        phi = 0
     pass
 def keyeventrelease():
     global teclas_activas

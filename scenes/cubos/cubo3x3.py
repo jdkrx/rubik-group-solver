@@ -59,7 +59,7 @@ def configurararchivos(cola):
         archivoreps4 = True
     except FileNotFoundError:
         pass
-
+    repscamino1, repscamino2, repscamino3, repscamino4 = ("", "", "", "")
     if not archivoreps1:
         get_reps1()
         with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
@@ -107,8 +107,8 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4, spac
     str = ""
     algo1 = []
     for i in alg1[::-1]:
-        gen = namegen(genname(i).inverso())
-        str += gen + " "
+        gen = namegen(genname(i).inverso()) # type: ignore
+        str += gen + " "# type: ignore
         algo1.append(gen)
     g1 = ID_CUBO
     for i in alg1:
@@ -122,8 +122,8 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4, spac
     algo2 = []
     str = ""
     for i in alg2[::-1]:
-        gen = namegen(genname(i).inverso())
-        str += gen + " "
+        gen = namegen(genname(i).inverso()) # type: ignore
+        str += gen + " " # type: ignore
         algo2.append(gen)
     g2 = ID_CUBO
     for i in alg2:
@@ -137,8 +137,8 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4, spac
     str = ""
     algo3 = []
     for i in alg3[::-1]:
-        gen = namegen(genname(i).inverso())
-        str += gen + " "
+        gen = namegen(genname(i).inverso()) # type: ignore
+        str += gen + " " # type: ignore
         algo3.append(gen)
     g3 = ID_CUBO
     for i in alg3:
@@ -152,8 +152,8 @@ def buscarsolvetw(scramble, dict_reps1, dict_reps2, dict_reps3, dict_reps4, spac
     str = ""
     algo4 = []
     for i in alg4[::-1]:
-        gen = namegen(genname(i).inverso())
-        str += gen + " "
+        gen = namegen(genname(i).inverso()) # type: ignore
+        str += gen + " "                    # type: ignore
         algo4.append(gen)
     algfinal = algo1 + algo2 + algo3 + algo4
     return (algfinal)
@@ -304,10 +304,6 @@ layers = {
 # endregion
 # una pieza debe ser 80x80x80
 def drawEdge(edge, orientation, t):
-    if t==-1:
-        t2 = -1
-        t=1
-    else: t2 = 1
     if orientation == 1: edge = (edge[1], edge[0])
 
     py5.stroke(0)
@@ -315,25 +311,19 @@ def drawEdge(edge, orientation, t):
 
 
     py5.translate(0, 0, 40*t)
-    if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1: py5.fill(50, 50, 50)
+    py5.fill(palette[edge[1]]) # type: ignore
     py5.rect(0, 0, 80, 80)
     py5.translate(0, 0, -40*t)
     py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
 
-    if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1: py5.fill(50, 50, 50)
+    py5.fill(palette[edge[0]]) # type: ignore
     py5.rect(0, 0, 80, 80)
 
     py5.rotate_x(-PI/2)
     py5.translate(0, 40*t, 0)
     py5.rect_mode(py5.CORNER)
-def drawCorner(corner, orientation, t, config = []):
-    if t==-1:
-        t2 = -1
-        t=1
-    else: t2 = 1
+def drawCorner(corner, orientation, t):
     if orientation == 1:  corner = (corner[1], corner[2], corner[0])
     if orientation == 2:  corner = (corner[2], corner[0], corner[1])
 
@@ -341,35 +331,20 @@ def drawCorner(corner, orientation, t, config = []):
     py5.rect_mode(py5.CENTER)
 
     py5.translate(0, 0, 40*t)
-    if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1:
-        py5.fill(50, 50, 50)
-        if config != []:
-            if config[0][0] == 1:
-                py5.fill(config[0][1])
+    py5.fill(palette[corner[1]])
     py5.rect(0, 0, 80, 80)
     py5.translate(0, 0, -40*t)
 
     py5.translate(0, -40*t, 0)
     py5.rotate_x(PI/2)
-    if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1:
-        py5.fill(50, 50, 50)
-        if config != []:
-            if config[1][0] == 1:
-                py5.fill(config[1][1])
+    py5.fill(palette[corner[0]])
     py5.rect(0, 0, 80, 80)
     py5.rotate_x(-PI/2)
     py5.translate(0, 40*t, 0)
 
     py5.translate(40*t, 0, 0)
     py5.rotate_y(PI/2)
-    if t2 == 1: py5.fill(palette[corner[1]])
-    if t2 ==-1:
-        py5.fill(50, 50, 50)
-        if config != []:
-            if config[2][0] == 1:
-                py5.fill(config[2][1])
+    py5.fill(palette[corner[2]])
     py5.rect(0, 0, 80, 80)
     py5.rotate_y(-PI/2)
     py5.translate(-40*t, 0, 0)
@@ -378,19 +353,19 @@ def drawCorner(corner, orientation, t, config = []):
 setcoordstickers = [
     # un array con las instrucciones para llegar a cada sticker del cubo
     # [ (rotacionx, rotaciony), translate(x, y, z) ] -> id del sticker en el espacio de pegatinas
-    [(PI/2, 0), (-80, -120, -80)], # UBL         #0
+    [(PI/2, 0), (-80, -120, -80)],               #0
     [(PI/2, 0), (0, -120, -80)],                 #1
-    [(PI/2, 0), (80, -120, -80)],  # UBR         #2
+    [(PI/2, 0), (80, -120, -80)],                #2
     [(PI/2, 0), (80, -120, 0)],                  #3
-    [(PI/2, 0), (80, -120, 80)],   # UFR         #4
+    [(PI/2, 0), (80, -120, 80)],                 #4
     [(PI/2, 0), (0, -120, 80)],                  #5
     [(PI/2, 0), (-80, -120, 80)],                #6
-    [(PI/2, 0), (-80, -120, 0)],  # UFL          #7     #U
+    [(PI/2, 0), (-80, -120, 0)],                 #7     #U
     [(0, PI/2), (-120, -80,-80)],                #8
-    [(0, PI/2), (-120, -80, 0)],     # DFL       #9
-    [(0, PI/2), (-120, -80, 80)],    # DFR       #10
-    [(0, PI/2), (-120, 0, 80)],      # DBR       #11
-    [(0, PI/2), (-120, 80, 80)], # DBL           #12
+    [(0, PI/2), (-120, -80, 0)],                 #9
+    [(0, PI/2), (-120, -80, 80)],                #10
+    [(0, PI/2), (-120, 0, 80)],                  #11
+    [(0, PI/2), (-120, 80, 80)],                 #12
     [(0, PI/2), (-120, 80, 0)],                  #13
     [(0, PI/2), (-120, 80, -80)],                #14
     [(0, PI/2), (-120, 0, -80)],                 #15   #L
@@ -980,8 +955,8 @@ H = generar_H()
 cornersid = [
     {0, 8, 34},
     {2, 26, 32},
-    {6, 10, 16},
     {4, 18, 24},
+    {6, 10, 16},
     {12, 22, 40},
     {20, 30, 42},
     {28, 38, 44},
@@ -1010,6 +985,7 @@ def indextopiece(index):
         if index in cornersid[x]:
             piece = corners[x]
             return piece
+    return [[], [], []]
 def indextocolor(index):
     if index in {0, 1, 2, 3, 4, 5, 6, 7}:
         return "U"
@@ -1024,75 +1000,287 @@ def indextocolor(index):
     if index in {40, 41, 42, 43, 44, 45, 46, 47}:
         return "D"
 
+# Contribución externa
+OPPOSITE = {"U": "D", "D": "U", "L": "R", "R": "L", "F": "B", "B": "F"}
+ALL_COLORS = frozenset({"U", "L", "F", "R", "B", "D"})
+# 12 aristas válidas
+ALL_EDGE_TYPES = frozenset(
+    frozenset((a, b))
+    for a in ALL_COLORS for b in ALL_COLORS
+    if a < b and OPPOSITE[a] != b
+)
+
+# 8 esquinas válidas
+ALL_CORNER_TYPES = frozenset(
+    frozenset((a, b, c))
+    for a in ALL_COLORS for b in ALL_COLORS for c in ALL_COLORS
+    if a < b < c
+    and OPPOSITE[a] != b and OPPOSITE[a] != c and OPPOSITE[b] != c
+)
+
+
+# 12 aristas: 2 colores no opuestos
+EDGE_TYPES = frozenset({
+    frozenset(("U","R")), frozenset(("U","F")), frozenset(("U","L")), frozenset(("U","B")),
+    frozenset(("D","R")), frozenset(("D","F")), frozenset(("D","L")), frozenset(("D","B")),
+    frozenset(("F","R")), frozenset(("F","L")), frozenset(("B","R")), frozenset(("B","L")),
+})
+
+# 8 esquinas: 3 colores mutuamente no opuestos
+CORNER_TYPES = frozenset({
+    frozenset(("U","R","F")), frozenset(("U","F","L")),
+    frozenset(("U","L","B")), frozenset(("U","B","R")),
+    frozenset(("D","F","R")), frozenset(("D","L","F")),
+    frozenset(("D","B","L")), frozenset(("D","R","B")),
+})
+def _has_perfect_matching(pieces, free_types):
+    if len(pieces) > len(free_types):
+        return False
+    match = {}   # tipo -> índice de pieza
+
+    def augment(i, visited):
+        for t in pieces[i]:
+            if t in visited or t not in free_types:
+                continue
+            visited.add(t)
+            if t not in match or augment(match[t], visited):
+                match[t] = i
+                return True
+        return False
+
+    return all(augment(i, set()) for i in range(len(pieces)))
+# fin
 
 class Build333:
     def __init__(self):
         self.array = [-1]*48
         self.state = [-1]*48
         self.index = 0
-    def set_sticker(self, color):
-        if color in self.get_available_colors(self.index):
-            self.array[self.index] = color
-            self.index+=1
+        self.edges = []
+    # contribución externa
+    def _piece_info(self, index):
+        for x in edgesid:
+            if index in x:
+                return x, True
+        for x in cornersid:
+            if index in x:
+                return x, False
+        return None, None
+    def _completable(self, pool, valid_types):
+        used, incomplete = set(), []
+        for p in pool:
+            colors = [self.array[s] for s in p]
+            if -1 in colors:
+                fixed = frozenset(c for c in colors if c != -1)
+                allowed = frozenset(t for t in valid_types if fixed <= t)
+                if not allowed:
+                    return False
+                incomplete.append(allowed)
+            else:
+                t = frozenset(colors)
+                if t not in valid_types or t in used:
+                    return False
+                used.add(t)
+        return _has_perfect_matching(incomplete, valid_types - used)
+    def _globally_completable(self):
+        return (self._completable(edgesid, EDGE_TYPES)
+                and self._completable(cornersid, CORNER_TYPES))
 
+    def _piece_type_in_use(self, color_type, exclude_piece, pool):
+        """¿Alguna pieza COMPLETAMENTE coloreada (≠ exclude_piece) tiene este tipo?"""
+        for x in pool:
+            if x == exclude_piece:
+                continue
+            colors = [self.array[s] for s in x]
+            if -1 in colors:          # aún incompleta → no la contamos
+                continue
+            if frozenset(colors) == color_type:
+                return True
+        return False
     def get_available_colors(self, index):
-        if index%2==1: #es una arista
+        piece, is_edge = self._piece_info(index)
+        if piece is None:
+            return set()
+        other = [self.array[s] for s in piece
+                 if s != index and self.array[s] != -1]
+
+        # filtro local rápido (color no repetido y no opuesto en la misma pieza)
+        quick = {c for c in ALL_COLORS
+                 if c not in other
+                 and all(OPPOSITE[c] != oc for oc in other)}
+
+        # filtro global: solo aceptamos si tras ponerlo el cubo sigue completable
+        result = set()
+        for c in quick:
+            self.array[index] = c
+            if self._globally_completable():
+                result.add(c)
+            self.array[index] = -1
+        return result
+    def is_stuck(self):
+        return any(
+            self.array[i] == -1 and not self.get_available_colors(i)
+            for i in range(48)
+        )
+    def set_sticker(self, color):
+        if color not in self.get_available_colors(self.index):
+            return False
+
+        if self.index % 2 == 1 and self.array[self.index] == -1:
             for x in edgesid:
-                if index in x:
-                    indexes = x
-            print(indexes)
-            indextuple = tuple(indexes)
-            posibilidades1 = []
-            if self.array[index] == "U":
-                posibilidades1 = [1, 3, 5, 7]
-            if self.array[index] == "L":
-                posibilidades1 = [9, 11, 13, 15]
-            if self.array[index] == "F":
-                posibilidades1 = [17, 19, 21, 23]
-            if self.array[index] == "R":
-                posibilidades1 = [25, 27, 29, 31]
-            if self.array[index] == "B":
-                posibilidades1 = [33, 35, 37, 39]
-            if self.array[index] == "D":
-                posibilidades1 = [41, 43, 45, 47]
-            posibilidades2 = set()
-            for x in posibilidades1:
-                if indextopiece(x)[0] == indextocolor(x): posibilidades2.add(indextopiece(x)[1])
-                if indextopiece(x)[1] == indextocolor(x): posibilidades2.add(indextopiece(x)[0])
-            posibilidades3 = set()
-            if posibilidades2==set():
-                return {"F", "B", "L", "R", "U", "D"}
-            return posibilidades2
-            pass
-        if index%2==0: #es esquina
-            posibilidades1 = []
-            if self.array[index] == "U":
-                posibilidades1 = [0, 2, 4, 6]
-            if self.array[index] == "L":
-                posibilidades1 = [8, 10, 12, 14]
-            if self.array[index] == "F":
-                posibilidades1 = [16, 18, 20, 22]
-            if self.array[index] == "R":
-                posibilidades1 = [24, 26, 28, 30]
-            if self.array[index] == "B":
-                posibilidades1 = [32, 34, 36, 38]
-            if self.array[index] == "D":
-                posibilidades1 = [40, 42, 44, 46]
-            #print(posibilidades1)
-            posibilidades2 = set()
-            for x in posibilidades1:
-                if indextopiece(x)[0] == indextocolor(x):
-                    posibilidades2.add(indextopiece(x)[1])
-                    posibilidades2.add(indextopiece(x)[2])
-                if indextopiece(x)[1] == indextocolor(x):
-                    posibilidades2.add(indextopiece(x)[0])
-                    posibilidades2.add(indextopiece(x)[2])
-                if indextopiece(x)[2] == indextocolor(x):
-                    posibilidades2.add(indextopiece(x)[0])
-                    posibilidades2.add(indextopiece(x)[1])
-            if posibilidades2==set():
-                return {"F", "B", "L", "R", "U", "D"}
-            return posibilidades2
+                if self.index in x:
+                    other = next(s for s in x if s != self.index)
+                    if self.array[other] != -1:
+                        self.edges.append(x)
+                    break
+
+        self.array[self.index] = color
+        if self.index < 47:              # fix del bug `self.array != 47`
+            self.index += 1
+        return True
+    def build(self):
+        """Devuelve un Rubik333 con el estado de pegatinas actual."""
+        if -1 in self.array:
+            raise ValueError("Todas las pegatinas deben estar coloreadas")
+
+        def ordered_indices(sticker_set, color_tuple):
+            result, remaining = [], list(sticker_set)
+            for color in color_tuple:
+                for s in remaining:
+                    if indextocolor(s) == color:
+                        result.append(s)
+                        remaining.remove(s)
+                        break
+                else:
+                    raise ValueError(
+                        f"No se encontró color {color} en {sticker_set}")
+            return result
+
+        def perm_parity(perm):
+            n = len(perm)
+            visited = [False] * n
+            parity = 0
+            for i in range(n):
+                if not visited[i]:
+                    j, length = i, 0
+                    while not visited[j]:
+                        visited[j] = True
+                        j = perm[j]
+                        length += 1
+                    parity ^= (length - 1) & 1
+            return parity
+
+        v     = [0] * 8
+        w     = [0] * 12
+        rho   = [-1] * 8
+        sigma = [-1] * 12
+
+        # ----- Esquinas -----
+        for z in range(8):
+            sset        = cornersid[z]
+            colors_here = {self.array[s] for s in sset}
+
+            x_found = next(
+                (k for k in range(8) if set(corners[k]) == colors_here), None)
+            if x_found is None:
+                raise ValueError(
+                    f"Posición {z}: colores de esquina inválidos {colors_here}")
+
+            ordered  = ordered_indices(sset, corners[z])
+            observed = tuple(self.array[s] for s in ordered)
+
+            y_found = next(
+                (y for y in range(3)
+                 if tuple(corners[x_found][(y + i) % 3] for i in range(3))
+                    == observed), None)
+            if y_found is None:
+                raise ValueError(
+                    f"No se puede determinar orientación de esquina en pos {z}")
+
+            rho[x_found] = z
+            v[z]         = y_found
+
+        # ----- Aristas -----
+        for z in range(12):
+            sset        = edgesid[z]
+            colors_here = {self.array[s] for s in sset}
+
+            x_found = next(
+                (k for k in range(12) if set(edges[k]) == colors_here), None)
+            if x_found is None:
+                raise ValueError(
+                    f"Posición {z}: colores de arista inválidos {colors_here}")
+
+            ordered  = ordered_indices(sset, edges[z])
+            observed = tuple(self.array[s] for s in ordered)
+
+            y_found = next(
+                (y for y in range(2)
+                 if tuple(edges[x_found][(y + i) % 2] for i in range(2))
+                    == observed), None)
+            if y_found is None:
+                raise ValueError(
+                    f"No se puede determinar orientación de arista en pos {z}")
+
+            sigma[x_found] = z
+            w[z]           = y_found
+
+        # ----- Validación de estado legal -----
+        if sorted(rho) != list(range(8)):
+            raise ValueError(f"Permutación de esquinas inválida: {rho}")
+        if sorted(sigma) != list(range(12)):
+            raise ValueError(f"Permutación de aristas inválida: {sigma}")
+        if sum(v) % 3 != 0:
+            raise ValueError(f"Suma de orientaciones de esquina {sum(v)} ≠ 0 mod 3")
+        if sum(w) % 2 != 0:
+            raise ValueError(f"Suma de orientaciones de arista {sum(w)} ≠ 0 mod 2")
+        if perm_parity(rho) ^ perm_parity(sigma) != 0:
+            raise ValueError("Paridades de permutación incompatibles")
+
+        return Rubik333(v, w, rho, sigma)
+   
+    def diagnose(self):
+        empty = [i for i in range(48) if self.array[i] == -1]
+        print(f"Stickers vacíos: {empty}")
+
+        seen_corners = {}
+        for z in range(8):
+            colors = tuple(sorted(self.array[s] for s in cornersid[z]))
+            if any(c == -1 for c in colors):
+                print(f"Esquina {z}: incompleta")
+                continue
+            if (OPPOSITE[colors[0]] == colors[1]
+                    or OPPOSITE[colors[0]] == colors[2]
+                    or OPPOSITE[colors[1]] == colors[2]):
+                print(f"Esquina {z}: contiene opuestos {colors}")
+            match = [k for k in range(8) if set(corners[k]) == set(colors)]
+            if not match:
+                print(f"Esquina {z}: {colors} no es ninguna esquina válida")
+            elif len(match) == 1:
+                if match[0] in seen_corners:
+                    print(f"Esquina {z} y {seen_corners[match[0]]}: "
+                          f"misma pieza {corners[match[0]]}")
+                seen_corners[match[0]] = z
+
+        seen_edges = {}
+        for z in range(12):
+            colors = tuple(sorted(self.array[s] for s in edgesid[z]))
+            if any(c == -1 for c in colors):
+                print(f"Arista {z}: incompleta")
+                continue
+            if OPPOSITE[colors[0]] == colors[1]:
+                print(f"Arista {z}: contiene opuestos {colors}")
+            match = [k for k in range(12) if set(edges[k]) == set(colors)]
+            if not match:
+                print(f"Arista {z}: {colors} no es ninguna arista válida")
+            elif len(match) == 1:
+                if match[0] in seen_edges:
+                    print(f"Arista {z} y {seen_edges[match[0]]}: "
+                          f"misma pieza {edges[match[0]]}")
+                seen_edges[match[0]] = z
+
+        print("Diagnóstico terminado.")
+    # fin
     def draw_centers(self):
         for z in range(6): # DRAW CENTERS
             a = setcoordcenters[z][1][0]
@@ -1113,8 +1301,7 @@ class Build333:
             if (self.array[z] == -1):
                 py5.fill(50, 50, 50)
             else:
-                py5.fill(palette[self.array[z]])
-
+                py5.fill(palette[self.array[z]]) # type: ignore
             a = setcoordstickers[z][1][0]
             b = setcoordstickers[z][1][1]
             c = setcoordstickers[z][1][2]
