@@ -34,6 +34,7 @@ def obtener_firma_G3_G4(g):
 #archivoreps4 = False
 def configurararchivos(cola):
     #global archivoreps1, archivoreps2, archivoreps3, archivoreps4
+    archivoreps1, archivoreps2, archivoreps3, archivoreps4 = (False, False, False, False)
     print("Haciendo cosas")
     try:
         with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:

@@ -212,6 +212,7 @@ archivoreps3 = False
 archivoreps4 = False
 def otrohilo(cola):
     print("Haciendo cosas")
+    archivoreps1, archivoreps2, archivoreps3, archivoreps4 = (False, False, False, False)
     try:
         with open('representantes/G0-G1.json', 'r', encoding='utf-8') as file:
             repscamino1 = json.load(file)
