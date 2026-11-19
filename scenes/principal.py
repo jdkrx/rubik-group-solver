@@ -160,7 +160,7 @@ def buttonmostrarsolve():
 
 
 barrasuperior = ui.addElement(topbar) # añadimos la barra a la interfaz
-ui.addElement(UIText(26, 23, "3", 15, py5.color(255), ""))
+ui.addElement(UIText(26, 13, "3", 15, py5.color(255), ""))
 botonresolverid = ui.addElement(UIButton(24, py5.height -54, 160, 30, "Resolver", 20, buttonresolver, funcionvacia, config_botones_principal))
 botonmodolibreid = ui.addElement(UIButton(24, py5.height -94, 160, 30, "Modo libre", 20, buttonmodolibre, funcionvacia, config_botones_principal))
 botonversolveid = ui.addElement(UIButton(24, py5.height -134, 160, 30, "Ver solución", 20, buttonmostrarsolve, funcionvacia, config_botones_principal))
