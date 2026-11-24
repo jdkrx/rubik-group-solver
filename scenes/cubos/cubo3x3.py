@@ -29,7 +29,6 @@ def obtener_firma_G3_G4(g):
 def configurararchivos(cola):
     archivoreps1, archivoreps2, archivoreps3, archivoreps4 = False, False, False, False
     repscamino1, repscamino2, repscamino3, repscamino4 = [], [], [], []
-    print("Haciendo cosas")
     URL = str(Path(__file__).resolve().parent) + "/../../representantes"
     try:
         with open(f'{URL}/G0-G1.json', 'r', encoding='utf-8') as file:
