@@ -1,4 +1,5 @@
 import py5
+from pathlib import Path
 from time import perf_counter as getTime
 from .cubos.cubo3x3 import cola
 from py5ui import *
@@ -40,7 +41,7 @@ def inicio():
 def load():
     global frames
     for x in range(10):
-        frames.append(py5.request_image(f'carga/carga-{x}.png'))
+        frames.append(py5.request_image(f'{Path(__file__).resolve().parent}/../carga/carga-{x}.png'))
 
 def getcheckload():
     global checkload
