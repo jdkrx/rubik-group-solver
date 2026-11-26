@@ -1,4 +1,6 @@
 # .gitignore genérico para Python
+# --- Representantes de clase ---
+.json
 # --- Entornos Virtuales ---
 venv/
 .venv/

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rubik-group-solver"
+version = "0.1.1"
+description = "Solver de cubos de Rubik con interfaz gráfica en py5"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "py5>=0.10.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

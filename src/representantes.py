@@ -1,5 +1,6 @@
 import time
 import json
+from pathlib import Path
 
 class Rubik333:
     def __init__(self, v, w, rho, sigma):
@@ -225,28 +226,32 @@ def getreps4():
 def get_reps1():
     inicio = time.perf_counter()
     getreps1()
-    with open("representantes/G0-G1.json", "w", encoding="utf-8") as file:
+    URL = str(Path(__file__).resolve().parent) + "/representantes"
+    with open(f"{URL}/G0-G1.json", "w", encoding="utf-8") as file:
         file.write(json.dumps(reps1, indent=4))
     final = time.perf_counter()
     print(f"Tiempo de ejecución: {final - inicio} segundos.")
 def get_reps2():
     inicio = time.perf_counter()
     getreps2()
-    with open("representantes/G1-G2.json", "w", encoding="utf-8") as file:
+    URL = str(Path(__file__).resolve().parent) + "/representantes"
+    with open(f"{URL}/G1-G2.json", "w", encoding="utf-8") as file:
         file.write(json.dumps(reps2, indent=4))
     final = time.perf_counter()
     print(f"Tiempo de ejecución: {final - inicio} segundos.")
 def get_reps3():
     inicio = time.perf_counter()
     getreps3()
-    with open("representantes/G2-G3.json", "w", encoding="utf-8") as file:
+    URL = str(Path(__file__).resolve().parent) + "/representantes"
+    with open(f"{URL}/G2-G3.json", "w", encoding="utf-8") as file:
         file.write(json.dumps(reps3, indent=4))
     final = time.perf_counter()
     print(f"Tiempo de ejecución: {final - inicio} segundos.")
 def get_reps4():
     inicio = time.perf_counter()
     getreps4()
-    with open("representantes/G3-G4.json", "w", encoding="utf-8") as file:
+    URL = str(Path(__file__).resolve().parent) + "/representantes"
+    with open(f"{URL}/G3-G4.json", "w", encoding="utf-8") as file:
         file.write(json.dumps(reps4, indent=4))
     final = time.perf_counter()
     print(f"Tiempo de ejecución: {final - inicio} segundos.")

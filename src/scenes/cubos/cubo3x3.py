@@ -53,7 +53,7 @@ def configurararchivos(cola):
             repscamino4 = json.load(file)
         archivoreps4 = True
     except FileNotFoundError:
-        print("Faltan los representantes de G1/G4")
+        print("Faltan los representantes de G3/G4")
     if not archivoreps1:
         get_reps1()
         with open(f'{URL}/G0-G1.json', 'r', encoding='utf-8') as file:
