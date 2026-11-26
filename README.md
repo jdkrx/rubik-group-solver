@@ -18,14 +18,23 @@ Implementación en Python de algoritmos basados en **Teoría de Grupos** y caden
 
 ### 1. Requisitos y dependencias
 * Python 3.8 o superior.
-* JDK-17 o superior*
+* Java-17 o superior*
 
 ### 2. Clonar el repositorio
 ```bash
 git clone https://github.com/jdkrx/rubik-group-solver.git
+cd rubik-group-solver
 ```
 
-### 3. Ejecutar el proyecto
+### 3. Configuración de entorno virtual y librerías
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install .
+```
+Antes de ir al siguiente paso es necesario tener instalado el JDK de Java 17 o superior y tener configurada la variable global JAVA_HOME
+
+### 4. Ejecutar el proyecto
 Con interfaz gráfica
 ```bash
 python3 src/main.py
