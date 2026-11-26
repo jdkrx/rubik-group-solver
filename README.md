@@ -45,20 +45,20 @@ $$G = (\mathbb{Z}_3^8 \times \mathbb{Z}_2^{12})_* \rtimes (S_8 \times S_{12})^+$
 
 con las restricciones de conservación de orientación y paridad:
 
-$$(\mathbb{Z}_3^8 \times \mathbb{Z}_2^{12})_* = \left\{ (v, w) \in \mathbb{Z}_3^8 \times \mathbb{Z}_2^{12} : \sum_{i=0}^7 v_i \equiv 0 \pmod 3, \; \sum_{j=0}^{11} w_j \equiv 0 \pmod 2 \right\}$$
+$$(\mathbb{Z}_3^8 \times \mathbb{Z}_2^{12})_* = \left\\{ (v, w) \in \mathbb{Z}_3^8 \times \mathbb{Z}_2^{12} : \sum_{i=0}^7 v_i \equiv 0 \pmod 3, \; \sum_{j=0}^{11} w_j \equiv 0 \pmod 2 \right\\}$$
 
-$$(S_8 \times S_{12})^+ = \{ (\rho, \sigma) \in S_8 \times S_{12} : \operatorname{sgn}(\rho) = \operatorname{sgn}(\sigma) \}$$
+$$(S_8 \times S_{12})^+ = \\{ (\rho, \sigma) \in S_8 \times S_{12} : sgn(\rho) = sgn(\sigma) \\}$$
 
 ### Cadena de Subgrupos (Thistlethwaite)
 El solver reduce cualquier estado $g_0 \in G$ al estado resuelto $id_G$ atravesando la cadena de subgrupos:
 
-$$G_0 > EO > DR > HTR > G_4 = \{id_G\}$$
+$$G_0 > EO > DR > HTR > G_4 = \\{id_G\\}$$
 
 | Paso | Subgrupo | Generadores | Firma de Clase Lateral | Representantes encontrados |
 | :--- | :--- | :--- | :--- | :--- |
 | **1** | $G_0 / EO$ | $\langle U, D, R, L, F, B \rangle$ | Vector de orientación de aristas $w$ | $2,048$ |
-| **2** | $EO / DR$ | $\langle U, D, R, L, F^2, B^2 \rangle$ | $(v, \operatorname{sorted}(\sigma[4:8]))$ | $1,082,565$ |
-| **3** | $DR / HTR$ | $\langle U, D, R^2, L^2, F^2, B^2 \rangle$ | Órbita $O_1 = \{0,2,8,10\}$ y clase lateral de $\rho$ por $H \le S_8$ | $29,400$ |
+| **2** | $EO / DR$ | $\langle U, D, R, L, F^2, B^2 \rangle$ | Orientación de esquinas y piezas en capa E $(v, \text{sorted}(\sigma[4:8]))$ | $1,082,565$ |
+| **3** | $DR / HTR$ | $\langle U, D, R^2, L^2, F^2, B^2 \rangle$ | Órbita $O_1 = \\{0,2,8,10\\}$ y clase lateral de $\rho$ por $H \le S_8$ | $29,400$ |
 | **4** | $HTR / G_4$ | $\langle U^2, D^2, R^2, L^2, F^2, B^2 \rangle$ | Tupla completa $(v, w, \rho, \sigma)$ | $663,552$ |
 
 *(Los conteos obtenidos coinciden exactamente con la demostración original de Thistlethwaite de 1981, comprobando que el método utilizado es correcto)*.
